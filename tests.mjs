@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import { defaultState, stageQuestions, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster } from './logic.js';
+
+assert.deepEqual(stageQuestions(7,'up').map(q=>q.factorB), [1,2,3,4,5,6,7,8,9]);
+assert.deepEqual(stageQuestions(7,'down').map(q=>q.factorB), [9,8,7,6,5,4,3,2,1]);
+assert.ok(bossQuestions(2,5).every(q=>q.factorA>=2 && q.factorA<=5));
+assert.ok(bossQuestions(6,9).every(q=>q.factorA>=6 && q.factorA<=9));
+assert.deepEqual(new Set(bossQuestions(1,9).map(q=>q.factorA)), new Set([1,2,3,4,5,6,7,8,9]));
+for (const n of [10,15,20,25,30]) assert.equal(comboAnimation(n),'special');
+for (const n of [6,7,8,9,11,12,13,14]) assert.notEqual(comboAnimation(n),'special');
+assert.equal(comboAnimation(5),'attack');
+
+const state=defaultState();
+const q=question(6,7);
+recordAttempt(state,q,false,'2026-01-01T00:00:00Z');
+assert.deepEqual(state.reviewQueue,['6x7']);
+const filler=[question(2,2),question(3,3),question(4,4),question(5,5),question(6,6),question(7,7),question(8,8),question(9,9),question(2,3)];
+const scheduler=new TrainingScheduler([q,...filler]);
+assert.equal(scheduler.current().key,'6x7');
+scheduler.advance(true);
+assert.notEqual(scheduler.current().key,'6x7');
+scheduler.advance(); scheduler.advance(); scheduler.advance();
+assert.equal(scheduler.current().key,'6x7');
+recordAttempt(state,q,true,'2026-01-01T00:01:00Z');
+assert.equal(state.multiplicationStats['6x7'].reviewActive,true);
+recordAttempt(state,q,true,'2026-01-01T00:02:00Z');
+assert.equal(state.multiplicationStats['6x7'].reviewActive,false);
+assert.deepEqual(state.reviewQueue,[]);
+
+const restored=migrateState(JSON.parse(JSON.stringify({...state,playerLevel:12,collections:['dragon']})));
+assert.equal(restored.playerLevel,12);
+assert.deepEqual(restored.collections,['dragon']);
+assert.equal(restored.multiplicationStats['6x7'].wrong,1);
+for (const f of [2,3,4,5]) state.stageProgress[f].random.cleared=true;
+assert.equal(isBossUnlocked(state,'mid1'),true);
+assert.equal(isBossUnlocked(state,'mid2'),false);
+state.bossProgress.mid1.defeated=true; state.bossProgress.mid2.defeated=true;
+assert.equal(isBossUnlocked(state,'final'),true);
+state.stageProgress[7].up.cleared=true; state.stageProgress[7].down.cleared=true;
+state.stageProgress[7].random={cleared:true,noMiss:true};
+assert.equal(isMaster(state,7),true);
+const savedAgain=migrateState(JSON.parse(JSON.stringify({...state,monsterBook:{slime:true},monsterDefeatCounts:{slime:2},mastery:{...state.mastery,7:true},maxCombos:{'7-random':9}})));
+assert.equal(savedAgain.monsterBook.slime,true);
+assert.equal(savedAgain.mastery[7],true);
+assert.equal(savedAgain.maxCombos['7-random'],9);
+console.log('All multiplication, SPECIAL, reviewQueue and persistence tests passed.');
