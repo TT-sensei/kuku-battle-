@@ -1,6 +1,6 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, NumberInput, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
-import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSSES, BACKGROUNDS, COLLECTIONS, ENCOURAGEMENT } from './data.js';
+import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, COLLECTIONS, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -25,6 +25,7 @@ const BOSS_CONFIG={
 function save(){ storage.save('state',state); }
 function pick(list){ return list[Math.floor(Math.random()*list.length)]; }
 function normalMonsterForFactor(factor){ return pick(NORMAL_MONSTER_GROUPS[Math.floor((factor-1)/3)]); }
+function bossMonsterForId(bossId){ return pick(BOSS_CANDIDATES[bossId]); }
 function setImage(img,src){ img.src=src; img.onerror=()=>{img.hidden=true;}; img.onload=()=>{img.hidden=false;}; }
 function formatFormula(q){ return `${q.factorA}×${q.factorB}＝${q.answer}`; }
 function formatTime(seconds){ const s=Math.max(0,Math.round(seconds)); return s>=60?`${Math.floor(s/60)}分${s%60}秒`:`${s}秒`; }
@@ -142,7 +143,7 @@ function battleConfig(){
   }
   const boss=BOSS_CONFIG[pendingBattle.bossId];
   const extra=pendingBattle.bossId==='final'?40:30;
-  return {...pendingBattle,support,playerMaxHp:support?7:5,enemyMaxHp:boss.hp,time:boss.time+(support?extra:0),monster:boss.monster,background:BACKGROUNDS[pendingBattle.bossId],min:boss.min,max:boss.max};
+  return {...pendingBattle,support,playerMaxHp:support?7:5,enemyMaxHp:boss.hp,time:boss.time+(support?extra:0),monster:bossMonsterForId(pendingBattle.bossId),background:BACKGROUNDS[pendingBattle.bossId],min:boss.min,max:boss.max};
 }
 
 function startBattle(){
@@ -366,7 +367,7 @@ function renderMap(){
   $$('[data-train-key]',list).forEach((b)=>b.addEventListener('click',()=>startTraining('battle',null,[b.dataset.trainKey])));
 }
 
-function allMonsters(){ return [...NORMAL_MONSTERS,...Object.values(BOSSES)]; }
+function allMonsters(){ return [...NORMAL_MONSTERS,...Object.values(BOSS_CANDIDATES).flat()]; }
 function renderBook(){
   const grid=$('#book-grid');grid.innerHTML='';
   allMonsters().forEach((monster)=>{const got=state.monsterBook[monster.id],card=document.createElement('article');card.className='book-card';card.innerHTML=`<img class="${got?'':'locked-image'}" src="${monster.image}" alt=""><strong>${got?monster.name:'？'}</strong><span>${got?`撃破 ${state.monsterDefeatCounts[monster.id]||0}回`:'まだ出会っていません'}</span>`;grid.append(card);});
