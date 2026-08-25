@@ -26,11 +26,25 @@ export const NORMAL_MONSTERS=[
 // 3体ずつの小さなモンスターグループから段に応じてランダム選出します。
 export const NORMAL_MONSTER_GROUPS=[NORMAL_MONSTERS.slice(0,3),NORMAL_MONSTERS.slice(3,6),NORMAL_MONSTERS.slice(6,9)];
 
-export const BOSSES={
-  mid1:{id:'forest-horn-king',name:'森角王グランリーフ',image:`${MON}/boss/forest-horn-king.webp`,kind:'midboss'},
-  mid2:{id:'thunder-griffon',name:'雷翼グリフォン',image:`${MON}/boss/thunder-griffon.webp`,kind:'midboss'},
-  final:{id:'crimson-inferno-dragon',name:'紅炎竜インフェルノ',image:`${MON}/boss/crimson-inferno-dragon.webp`,kind:'boss'}
+export const BOSS_CANDIDATES={
+  mid1:[
+    {id:'forest-horn-king',name:'森角王グランリーフ',image:`${MON}/boss/forest-horn-king.webp`,kind:'midboss'},
+    {id:'autumn-horn-king',name:'秋彩角王オータムリーフ',image:`${MON}/boss/autumn-horn-king.webp`,kind:'midboss'},
+    {id:'moss-ruin-horn-king',name:'苔岩角王モスルイン',image:`${MON}/boss/moss-ruin-horn-king.webp`,kind:'midboss'}
+  ],
+  mid2:[
+    {id:'thunder-griffon',name:'雷翼グリフォン',image:`${MON}/boss/thunder-griffon.webp`,kind:'midboss'},
+    {id:'sky-ruin-griffon',name:'空遺跡グリフォン',image:`${MON}/boss/sky-ruin-griffon.webp`,kind:'midboss'},
+    {id:'solar-griffon-king',name:'太陽翼王ソルグリフォン',image:`${MON}/boss/solar-griffon-king.webp`,kind:'midboss'}
+  ],
+  final:[
+    {id:'crimson-inferno-dragon',name:'紅炎竜インフェルノ',image:`${MON}/boss/crimson-inferno-dragon.webp`,kind:'boss'},
+    {id:'azure-sky-dragon',name:'蒼天竜アズール',image:`${MON}/boss/azure-sky-dragon.webp`,kind:'boss'},
+    {id:'eclipse-shadow-phoenix',name:'蝕影鳥エクリプス',image:`${MON}/boss/eclipse-shadow-phoenix.webp`,kind:'boss'}
+  ]
 };
+
+export const BOSSES=Object.fromEntries(Object.entries(BOSS_CANDIDATES).map(([id,candidates])=>[id,candidates[0]]));
 
 export const BACKGROUNDS={normal:`${NAVI}/backgrounds/grassland.webp`,mid1:`${NAVI}/backgrounds/forest.webp`,mid2:`${NAVI}/backgrounds/sky-island.webp`,final:`${NAVI}/backgrounds/volcano.webp`};
 
