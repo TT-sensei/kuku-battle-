@@ -1,6 +1,6 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, NumberInput, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
-import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, COLLECTIONS, ENCOURAGEMENT } from './data.js';
+import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, ALL_COLLECTIONS, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -230,7 +230,7 @@ function markBattleProgress(config,misses){
 function awardCollection(firstClear){
   const owned=new Set(state.collections);
   if(!firstClear && Math.random()>.45) return null;
-  let candidates=COLLECTIONS.filter((item)=>!owned.has(item.id));
+  let candidates=ALL_COLLECTIONS.filter((item)=>!owned.has(item.id));
   if(firstClear){ const common=candidates.filter((item)=>item.rarity==='common'); if(common.length)candidates=common; }
   if(!candidates.length) return null;
   if(!firstClear){
@@ -376,9 +376,9 @@ function renderBook(){
 }
 
 function renderCollection(){
-  const owned=new Set(state.collections); $('#collection-count').textContent=`${owned.size} / ${COLLECTIONS.length} 集まったよ`;
+  const owned=new Set(state.collections); $('#collection-count').textContent=`${owned.size} / ${ALL_COLLECTIONS.length} 集まったよ`;
   const grid=$('#collection-grid');grid.innerHTML='';
-  COLLECTIONS.forEach((item)=>{const got=owned.has(item.id),card=document.createElement('article');card.className=`collection-card rarity-${item.rarity}${got?'':' locked'}`;card.innerHTML=`<img class="${got?'':'locked-image'}" src="${item.image}" alt=""><strong>${got?item.name:'？'}</strong><span>${got?item.rarity.toUpperCase().replace('-',' '):'未獲得'}</span>`;grid.append(card);});
+  ALL_COLLECTIONS.forEach((item)=>{const got=owned.has(item.id),card=document.createElement('article');card.className=`collection-card rarity-${item.rarity}${got?'':' locked'}`;card.innerHTML=`<img class="${got?'':'locked-image'}" src="${item.image}" alt=""><strong>${got?item.name:'？'}</strong><span>${got?(item.category==='math'?'算数バッジ':item.rarity.toUpperCase().replace('-',' ')):'未獲得'}</span>`;grid.append(card);});
 }
 
 function renderSettings(){ $('#setting-sound').checked=!state.settings.muted; $('#setting-support').checked=state.supportMode; }
