@@ -8,7 +8,8 @@ assert.ok(bossQuestions(6,9).every(q=>q.factorA>=6 && q.factorA<=9));
 assert.deepEqual(new Set(bossQuestions(1,9).map(q=>q.factorA)), new Set([1,2,3,4,5,6,7,8,9]));
 for (const n of [10,15,20,25,30]) assert.equal(comboAnimation(n),'special');
 for (const n of [6,7,8,9,11,12,13,14]) assert.notEqual(comboAnimation(n),'special');
-assert.equal(comboAnimation(5),'attack');
+assert.equal(comboAnimation(5),'special');
+assert.equal(comboAnimation(6),'attack');
 
 const state=defaultState();
 const q=question(6,7);
