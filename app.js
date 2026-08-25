@@ -55,6 +55,9 @@ function show(id){
 
 function renderHome(){
   const hero=CHARACTERS[state.selectedCharacter];
+  $('#home').style.backgroundImage=`linear-gradient(rgba(255,253,248,.86),rgba(255,253,248,.88)),url("${BACKGROUNDS.home}")`;
+  $('#home').style.backgroundSize='cover';
+  $('#home').style.backgroundPosition='center';
   $('#home-level').textContent=state.playerLevel;
   $('#home-role').textContent=hero.role;
   setImage($('#home-character'),hero.stand);
@@ -293,6 +296,9 @@ function renderBattleResult(data){
 }
 
 function renderTrainingMenu(){
+  $('#training-menu').style.backgroundImage=`linear-gradient(rgba(239,249,241,.88),rgba(255,250,237,.9)),url("${BACKGROUNDS.training}")`;
+  $('#training-menu').style.backgroundSize='cover';
+  $('#training-menu').style.backgroundPosition='center';
   setImage($('#training-menu-player'),CHARACTERS[state.selectedCharacter].stand);
   if(state.trainingPartner===state.selectedCharacter) state.trainingPartner=Object.keys(CHARACTERS).find((key)=>key!==state.selectedCharacter);
   setImage($('#training-menu-partner'),CHARACTERS[state.trainingPartner].stand);
@@ -305,6 +311,9 @@ function startTraining(type,factor=null,preferredKeys=[],returnBattle=null){
   const seed=trainingSeed(state,type,factor,preferredKeys);
   const input=new NumberInput({answer:0},{eventTarget:document});
   training={type,factor,preferredKeys,returnBattle,input,scheduler:new TrainingScheduler(seed),score:new ScoreManager(),locked:false,beforeQueue:new Set(state.reviewQueue)};
+  $('#training').style.backgroundImage=`linear-gradient(rgba(239,249,241,.84),rgba(255,250,237,.88)),url("${BACKGROUNDS.training}")`;
+  $('#training').style.backgroundSize='cover';
+  $('#training').style.backgroundPosition='center';
   $('#training-title').textContent=type==='stage'?`${factor}の段 特訓`:type==='wrong'?'まちがい特訓':type==='battle'?'バトルのまちがい特訓':'おまかせ特訓';
   setImage($('#training-player'),CHARACTERS[state.selectedCharacter].stand);
   setImage($('#training-partner'),CHARACTERS[state.trainingPartner].stand);
