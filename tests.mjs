@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { defaultState, stageQuestions, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster } from './logic.js';
+import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster } from './logic.js';
 
 assert.deepEqual(stageQuestions(7,'up').map(q=>q.factorB), [1,2,3,4,5,6,7,8,9]);
 assert.deepEqual(stageQuestions(7,'down').map(q=>q.factorB), [9,8,7,6,5,4,3,2,1]);
@@ -10,6 +10,13 @@ for (const n of [10,15,20,25,30]) assert.equal(comboAnimation(n),'special');
 for (const n of [6,7,8,9,11,12,13,14]) assert.notEqual(comboAnimation(n),'special');
 assert.equal(comboAnimation(5),'special');
 assert.equal(comboAnimation(6),'attack');
+
+const rewardState=defaultState();
+assert.equal(getStageRewardExp(rewardState,7,20,'2026-08-25'),20);
+assert.equal(getStageRewardExp(rewardState,7,20,'2026-08-25'),15);
+assert.equal(getStageRewardExp(rewardState,7,20,'2026-08-25'),10);
+assert.equal(getStageRewardExp(rewardState,7,20,'2026-08-25'),5);
+assert.equal(getStageRewardExp(rewardState,7,20,'2026-08-26'),20);
 
 const state=defaultState();
 const q=question(6,7);
