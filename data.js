@@ -46,7 +46,7 @@ export const BOSS_CANDIDATES={
 
 export const BOSSES=Object.fromEntries(Object.entries(BOSS_CANDIDATES).map(([id,candidates])=>[id,candidates[0]]));
 
-export const BACKGROUNDS={normal:`${NAVI}/backgrounds/grassland.webp`,mid1:`${NAVI}/backgrounds/forest.webp`,mid2:`${NAVI}/backgrounds/sky-island.webp`,final:`${NAVI}/backgrounds/volcano.webp`};
+export const BACKGROUNDS={home:`${NAVI}/backgrounds/town.webp`,training:`${NAVI}/backgrounds/training-ground.webp`,normal:`${NAVI}/backgrounds/grassland.webp`,mid1:`${NAVI}/backgrounds/forest.webp`,mid2:`${NAVI}/backgrounds/sky-island.webp`,final:`${NAVI}/backgrounds/volcano.webp`};
 
 export const COLLECTIONS=[
   ['dragon','ドラゴン','common'],['fairy','フェアリー','common'],['golem','ゴーレム','common'],['griffin','グリフォン','common'],
