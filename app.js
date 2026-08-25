@@ -1,7 +1,7 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, NumberInput, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
 import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, COLLECTIONS, ENCOURAGEMENT } from './data.js';
-import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
+import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
@@ -246,21 +246,23 @@ function finishBattle(win,reason){
   const elapsed=Math.max(1,Math.round((Date.now()-battle.startedAt)/1000));
   const result=battle.score.getResult(); const config=battle.config;
   const previousLevel=state.playerLevel;
-  let firstClear=false; let reward=null;
+  let firstClear=false; let reward=null; let earnedExp=0;
   if(win){
     firstClear=markBattleProgress(config,result.wrong);
     const base=config.kind==='normal'?20:config.bossId==='final'?100:50;
-    addExp(state,base+Math.min(10,result.correct)); reward=awardCollection(firstClear);
+    const rawExp=base+Math.min(10,result.correct);
+    earnedExp=config.kind==='normal'?getStageRewardExp(state,config.factor,rawExp):rawExp;
+    addExp(state,earnedExp); reward=awardCollection(firstClear);
     const key=config.kind==='normal'?`${config.factor}-${config.mode}`:config.bossId;
     const category=config.support?'support':'normal';
     if(!state.bestTimes[category][key] || elapsed<state.bestTimes[category][key]) state.bestTimes[category][key]=elapsed;
     state.maxCombos[key]=Math.max(state.maxCombos[key]||0,battle.combo.getMax());
     state.monsterBook[config.monster.id]=true;
     state.monsterDefeatCounts[config.monster.id]=(state.monsterDefeatCounts[config.monster.id]||0)+1;
-  }else addExp(state,Math.min(5,result.correct));
+  }else { earnedExp=Math.min(5,result.correct); addExp(state,earnedExp); }
   save();
   if(state.playerLevel>previousLevel) playSound('levelup'); else if(reward) playSound(reward.rarity==='common'?'badge':'rareBadge'); else playSound(win?'allclear':'wrong');
-  renderBattleResult({win,reason,elapsed,result,config,reward,firstClear,wrongKeys:[...battle.wrongKeys],remainingHp:battle.playerHp,maxCombo:battle.combo.getMax()});
+  renderBattleResult({win,reason,elapsed,result,config,reward,firstClear,earnedExp,wrongKeys:[...battle.wrongKeys],remainingHp:battle.playerHp,maxCombo:battle.combo.getMax()});
   show('result');
 }
 
@@ -272,7 +274,7 @@ function renderBattleResult(data){
   $('#result-mark').textContent=win?'🏆':'🌱'; $('#result-kicker').textContent='バトル終了';
   $('#result-title').textContent=win?'クリア！':reason==='time'?'タイムアップ':'あと少し！';
   $('#result-message').textContent=win?'モンスターを撃破！ 次の冒険か、苦手の特訓へ進もう。':'特訓すれば、次はきっと強くなれるよ。';
-  $('#result-stats').innerHTML=statChip('正解',result.correct)+statChip('ミス',result.wrong)+statChip('最大コンボ',maxCombo)+statChip('クリア時間',formatTime(elapsed))+statChip('残りHP',remainingHp)+statChip('EXP',state.exp)+statChip('冒険レベル',`Lv.${state.playerLevel}`);
+  $('#result-stats').innerHTML=statChip('正解',result.correct)+statChip('ミス',result.wrong)+statChip('最大コンボ',maxCombo)+statChip('クリア時間',formatTime(elapsed))+statChip('残りHP',remainingHp)+statChip('今回EXP',`+${earnedExp}`)+statChip('EXP累計',state.exp)+statChip('冒険レベル',`Lv.${state.playerLevel}`);
   const rewardBox=$('#result-reward'); rewardBox.hidden=!reward;
   if(reward) rewardBox.innerHTML=`<img src="${reward.image}" alt=""><div><strong>宝箱から「${reward.name}」！</strong><p>コレクションに追加されました。</p></div>`;
   const weak=$('#result-weak'); weak.hidden=!wrongKeys.length;
