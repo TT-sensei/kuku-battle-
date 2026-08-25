@@ -133,6 +133,7 @@ export function defaultState() {
     supportMode:false, stageProgress, bossProgress:{mid1:{defeated:false},mid2:{defeated:false},final:{defeated:false}},
     multiplicationStats:{}, recentAttempts:[], reviewQueue:[], mastery, bestTimes:{normal:{},support:{}}, maxCombos:{},
     monsterBook:{}, monsterDefeatCounts:{}, collections:[], settings:{muted:false,volume:0.24},
+    adventureReward:{date:'',byFactor:{}},
     trainingExp:{date:'',earned:0}
   };
 }
@@ -150,8 +151,19 @@ export function migrateState(saved) {
   merged.stageProgress = mergeProgress(base.stageProgress, saved.stageProgress);
   merged.bossProgress = { mid1:{...base.bossProgress.mid1,...saved.bossProgress?.mid1}, mid2:{...base.bossProgress.mid2,...saved.bossProgress?.mid2}, final:{...base.bossProgress.final,...saved.bossProgress?.final} };
   merged.settings = { ...base.settings, ...(saved.settings || {}) };
+  merged.adventureReward = { ...base.adventureReward, ...(saved.adventureReward || {}), byFactor:{ ...(saved.adventureReward?.byFactor || {}) } };
   merged.reviewQueue = [...new Set((saved.reviewQueue || []).filter((key) => /^\d+x\d+$/.test(key)))];
   return merged;
+}
+
+export function getStageRewardExp(state, factor, baseAmount, today = new Date().toISOString().slice(0,10)) {
+  if (state.adventureReward.date !== today) {
+    state.adventureReward = { date:today, byFactor:{} };
+  }
+  const count = Number(state.adventureReward.byFactor[factor] || 0);
+  const multiplier = [1, 0.75, 0.5, 0.25][Math.min(count, 3)];
+  state.adventureReward.byFactor[factor] = count + 1;
+  return Math.max(3, Math.round(baseAmount * multiplier));
 }
 
 export function addExp(state, amount) {
