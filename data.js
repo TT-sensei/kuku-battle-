@@ -23,6 +23,9 @@ export const NORMAL_MONSTERS=[
   ['star-bat','スターコウモリ',`${MON}/zako/star-bat.webp`]
 ].map(([id,name,image],i)=>({id,name,image,kind:'normal',factor:i+1}));
 
+// 3体ずつの小さなモンスターグループから段に応じてランダム選出します。
+export const NORMAL_MONSTER_GROUPS=[NORMAL_MONSTERS.slice(0,3),NORMAL_MONSTERS.slice(3,6),NORMAL_MONSTERS.slice(6,9)];
+
 export const BOSSES={
   mid1:{id:'forest-horn-king',name:'森角王グランリーフ',image:`${MON}/boss/forest-horn-king.webp`,kind:'midboss'},
   mid2:{id:'thunder-griffon',name:'雷翼グリフォン',image:`${MON}/boss/thunder-griffon.webp`,kind:'midboss'},
