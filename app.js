@@ -273,7 +273,7 @@ function statChip(label,value){ return `<div class="stat-chip"><strong>${value}<
 function actionButton(label,handler,primary=false){ const b=document.createElement('button');b.textContent=label;b.className=primary?'primary':'';b.addEventListener('click',handler);return b; }
 
 function renderBattleResult(data){
-  const {win,reason,result,elapsed,config,reward,wrongKeys,remainingHp,maxCombo}=data;
+  const {win,reason,result,elapsed,config,reward,firstClear,earnedExp,wrongKeys,remainingHp,maxCombo}=data;
   $('#result-mark').textContent=win?'🏆':'🌱'; $('#result-kicker').textContent='バトル終了';
   $('#result-title').textContent=win?'クリア！':reason==='time'?'タイムアップ':'あと少し！';
   $('#result-message').textContent=win?'モンスターを撃破！ 次の冒険か、苦手の特訓へ進もう。':'特訓すれば、次はきっと強くなれるよ。';
