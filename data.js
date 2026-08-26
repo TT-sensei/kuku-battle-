@@ -20,27 +20,33 @@ export const NORMAL_MONSTERS=[
   ['frost-pup','モフウルフ',`${MON}/zako/mofu-wolf-frost-pup.webp`],
   ['apple-mushroom','りんごキノコ',`${MON}/zako/kinoko-apple-mushroom.webp`],
   ['snow-puff','ゆきまる',`${MON}/zako/yukimaru-snow-puff.webp`],
-  ['star-bat','スターコウモリ',`${MON}/zako/star-bat.webp`]
+  ['star-bat','スターコウモリ',`${MON}/zako/star-bat.webp`],
+  ['berry-leafy','ベリリーフ',`${MON}/zako/berry-leafy.webp`],
+  ['happa-squirrel-leafy','はっぱリス',`${MON}/zako/happa-squirrel-leafy.webp`],
+  ['yukimaru-snow-puff','ゆきまる（夜）',`${MON}/zako/yukimaru-snow-puff.webp`]
 ].map(([id,name,image],i)=>({id,name,image,kind:'normal',factor:i+1}));
 
 // 3体ずつの小さなモンスターグループから段に応じてランダム選出します。
-export const NORMAL_MONSTER_GROUPS=[NORMAL_MONSTERS.slice(0,3),NORMAL_MONSTERS.slice(3,6),NORMAL_MONSTERS.slice(6,9)];
+export const NORMAL_MONSTER_GROUPS=[NORMAL_MONSTERS.slice(0,3).concat(NORMAL_MONSTERS[9]),NORMAL_MONSTERS.slice(3,6).concat(NORMAL_MONSTERS[10]),NORMAL_MONSTERS.slice(6,9).concat(NORMAL_MONSTERS[11])];
 
 export const BOSS_CANDIDATES={
   mid1:[
     {id:'forest-horn-king',name:'森角王グランリーフ',image:`${MON}/boss/forest-horn-king.webp`,kind:'midboss'},
     {id:'autumn-horn-king',name:'秋彩角王オータムリーフ',image:`${MON}/boss/autumn-horn-king.webp`,kind:'midboss'},
-    {id:'moss-ruin-horn-king',name:'苔岩角王モスルイン',image:`${MON}/boss/moss-ruin-horn-king.webp`,kind:'midboss'}
+    {id:'moss-ruin-horn-king',name:'苔岩角王モスルイン',image:`${MON}/boss/moss-ruin-horn-king.webp`,kind:'midboss'},
+    {id:'dream-cat-mage',name:'ゆめねこ魔導士',image:`${MON}/boss/dream-cat-mage.webp`,kind:'midboss'}
   ],
   mid2:[
     {id:'thunder-griffon',name:'雷翼グリフォン',image:`${MON}/boss/thunder-griffon.webp`,kind:'midboss'},
     {id:'sky-ruin-griffon',name:'空遺跡グリフォン',image:`${MON}/boss/sky-ruin-griffon.webp`,kind:'midboss'},
-    {id:'solar-griffon-king',name:'太陽翼王ソルグリフォン',image:`${MON}/boss/solar-griffon-king.webp`,kind:'midboss'}
+    {id:'solar-griffon-king',name:'太陽翼王ソルグリフォン',image:`${MON}/boss/solar-griffon-king.webp`,kind:'midboss'},
+    {id:'dawn-cat-mage',name:'あかつきねこ魔導士',image:`${MON}/boss/dawn-cat-mage.webp`,kind:'midboss'}
   ],
   final:[
     {id:'crimson-inferno-dragon',name:'紅炎竜インフェルノ',image:`${MON}/boss/crimson-inferno-dragon.webp`,kind:'boss'},
     {id:'azure-sky-dragon',name:'蒼天竜アズール',image:`${MON}/boss/azure-sky-dragon.webp`,kind:'boss'},
-    {id:'eclipse-shadow-phoenix',name:'蝕影鳥エクリプス',image:`${MON}/boss/eclipse-shadow-phoenix.webp`,kind:'boss'}
+    {id:'eclipse-shadow-phoenix',name:'蝕影鳥エクリプス',image:`${MON}/boss/eclipse-shadow-phoenix.webp`,kind:'boss'},
+    {id:'twilight-cat-mage',name:'よいやみねこ魔導士',image:`${MON}/boss/twilight-cat-mage.webp`,kind:'boss'}
   ]
 };
 
