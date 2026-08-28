@@ -99,7 +99,7 @@ export const BOSSES=Object.fromEntries(
   Object.entries(BOSS_CANDIDATES).map(([id,candidates])=>[id,candidates[0]])
 );
 
-export const BACKGROUNDS={home:`${NAVI}/backgrounds/town.webp`,training:`${NAVI}/backgrounds/training-ground.webp`,normal:`${NAVI}/backgrounds/grassland.webp`,mid1:`${NAVI}/backgrounds/forest.webp`,mid2:`${NAVI}/backgrounds/sky-island.webp`,final:`${NAVI}/backgrounds/volcano.webp`};
+export const BACKGROUNDS={adventure:`${NAVI}/backgrounds/town.webp`,home:`${NAVI}/backgrounds/town.webp`,training:`${NAVI}/backgrounds/training-ground.webp`,normal:`${NAVI}/backgrounds/grassland.webp`,mid1:`${NAVI}/backgrounds/forest.webp`,mid2:`${NAVI}/backgrounds/sky-island.webp`,final:`${NAVI}/backgrounds/volcano.webp`};
 export const PREP_GROUP_IMAGE=`${NAVI}/groups/group-fantasy-adventure.webp`;
 
 export const COLLECTIONS=[
