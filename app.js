@@ -16,6 +16,30 @@ let training=null;
 let audioContext=null;
 
 const MODE_LABEL={up:'のぼり',down:'くだり',random:'ランダム'};
+const KUKU_WORDS = [
+  ['いんいちが','いんにが','いんさんが','いんしが','いんごが','いんろくが','いんしちが','いんはちが','いんくが'],
+  ['にいちが','ににんが','にさんが','にしが','にご','にろく','にしち','にはち','にく'],
+  ['さぶいちが','さんにが','さざんが','さし','さご','さぶろく','さしち','さはち','さっく'],
+  ['しいちが','しにが','しさん','しし','しご','しろく','ししち','しはち','しく'],
+  ['ごいちが','ごに','ごさん','ごし','ごご','ごろく','ごしち','ごはち','ごく'],
+  ['ろくいちが','ろくに','ろくさん','ろくし','ろくご','ろくろく','ろくしち','ろくはち','ろっく'],
+  ['しちいちが','しちに','しちさん','しちし','しちご','しちろく','しちしち','しちはち','しちく'],
+  ['はちいちが','はちに','はちさん','はちし','はちご','はちろく','はちしち','はっぱち','はっく'],
+  ['くいちが','くに','くさん','くし','くご','くろく','くしち','くはち','くく']
+];
+
+function kukuWord(q){
+  return KUKU_WORDS[q.factorA-1]?.[q.factorB-1] || '';
+}
+
+function renderQuestion(prefix,q){
+  const word = $('#' + prefix + '-kuku-word');
+  const equation = $('#' + prefix + '-equation');
+  word.textContent = kukuWord(q);
+  word.hidden = state.settings.showKukuWords === false;
+  equation.textContent = q.factorA + ' × ' + q.factorB + ' ＝';
+}
+
 const BOSS_CONFIG={
   mid1:{title:'中ボス1・2〜5の段',hp:16,time:90,min:2,max:5,monster:BOSSES.mid1},
   mid2:{title:'中ボス2・6〜9の段',hp:16,time:90,min:6,max:9,monster:BOSSES.mid2},
@@ -172,7 +196,7 @@ function startBattle(){
 function nextBattleQuestion(){
   if(!battle || battle.ended) return;
   battle.current=battle.bag.next(); battle.asked+=1; battle.input.reset({answer:battle.current.answer});
-  $('#battle-question').firstChild.textContent=`${battle.current.factorA} × ${battle.current.factorB} ＝ `;
+  renderQuestion('battle',battle.current);
   $('#battle-answer').textContent='?'; $('#battle-feedback').textContent='';
   $('#battle-progress').textContent=`${battle.asked}問目｜あと${battle.enemyHp}回 正解で撃破`;
   battle.locked=false;
@@ -326,7 +350,7 @@ function renderTrainingQuestion(){
   const q=training.scheduler.current();
   if(!q){ finishTraining(); return; }
   training.input.reset({answer:q.answer}); training.locked=false;
-  $('#training-question').firstChild.textContent=`${q.factorA} × ${q.factorB} ＝ `;
+  renderQuestion('training',q);
   $('#training-answer').textContent='?'; $('#training-feedback').textContent='';
   $('#training-remaining').textContent=10-training.scheduler.index;
 }
@@ -392,7 +416,11 @@ function renderCollection(){
   ALL_COLLECTIONS.forEach((item)=>{const got=owned.has(item.id),card=document.createElement('article');card.className=`collection-card rarity-${item.rarity}${got?'':' locked'}`;card.innerHTML=`<img class="${got?'':'locked-image'}" src="${item.image}" alt=""><strong>${got?item.name:'？'}</strong><span>${got?(item.category==='math'?'算数バッジ':item.rarity.toUpperCase().replace('-',' ')):'未獲得'}</span>`;grid.append(card);});
 }
 
-function renderSettings(){ $('#setting-sound').checked=!state.settings.muted; $('#setting-support').checked=state.supportMode; }
+function renderSettings(){
+  $('#setting-sound').checked=!state.settings.muted;
+  $('#setting-support').checked=state.supportMode;
+  $('#setting-kuku-words').checked=state.settings.showKukuWords !== false;
+}
 
 $$('[data-go]').forEach((button)=>button.addEventListener('click',()=>show(button.dataset.go)));
 $$('[data-mode]').forEach((button)=>button.addEventListener('click',()=>prepareBattle({kind:'normal',factor:currentFactor,mode:button.dataset.mode})));
@@ -407,6 +435,7 @@ $('#battle-exit').addEventListener('click',()=>{if(confirm('バトルをやめ�
 $('#training-exit').addEventListener('click',()=>{if(confirm('特訓をやめてホームへ戻りますか？')){training=null;show('training-menu');}});
 $('#setting-sound').addEventListener('change',(e)=>{state.settings.muted=!e.target.checked;save();if(e.target.checked)playSound('correct');});
 $('#setting-support').addEventListener('change',(e)=>{state.supportMode=e.target.checked;save();});
+$('#setting-kuku-words').addEventListener('change',(e)=>{state.settings.showKukuWords=e.target.checked;save();});
 $('#prep-support').addEventListener('change',(e)=>{state.supportMode=e.target.checked;save();});
 
 document.addEventListener('keydown',(event)=>{
