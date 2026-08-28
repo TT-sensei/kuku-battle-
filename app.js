@@ -1,6 +1,6 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, NumberInput, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
-import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, ALL_COLLECTIONS, ENCOURAGEMENT } from './data.js';
+import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, ALL_COLLECTIONS, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -135,16 +135,14 @@ function renderAdventure(){
 function prepareBattle(config){
   pendingBattle={...config};
   const normal=config.kind==='normal';
-  const monster=normal?normalMonsterForFactor(config.factor):BOSS_CONFIG[config.bossId].monster;
   const maxHp=normal?9:BOSS_CONFIG[config.bossId].hp;
   const baseTime=normal?60:BOSS_CONFIG[config.bossId].time;
   $('#prep-title').textContent=normal?`${config.factor}の段・${MODE_LABEL[config.mode]}`:BOSS_CONFIG[config.bossId].title;
-  $('#prep-enemy-name').textContent=monster.name;
   $('#prep-rule').textContent=`HP ${maxHp}｜${baseTime}秒｜正解は必ず1ダメージ`;
   $('#prep-support').checked=state.supportMode;
   $('#support-detail').textContent=`HP7・時間${baseTime+(normal?30:config.bossId==='final'?40:30)}秒`;
   setImage($('#prep-player'),CHARACTERS[state.selectedCharacter].stand);
-  setImage($('#prep-enemy'),monster.image);
+  setImage($('#prep-team'),PREP_GROUP_IMAGE);
   show('battle-prep');
 }
 
