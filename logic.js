@@ -132,7 +132,7 @@ export function defaultState() {
     schemaVersion:SCHEMA_VERSION, selectedCharacter:'sora', trainingPartner:'kai', playerLevel:1, exp:0,
     supportMode:false, stageProgress, bossProgress:{mid1:{defeated:false},mid2:{defeated:false},final:{defeated:false}},
     multiplicationStats:{}, recentAttempts:[], reviewQueue:[], mastery, bestTimes:{normal:{},support:{}}, maxCombos:{},
-    monsterBook:{}, monsterDefeatCounts:{}, collections:[], settings:{muted:false,volume:0.24},
+    monsterBook:{}, monsterDefeatCounts:{}, collections:[], settings:{muted:false,volume:0.24,showKukuWords:true},
     adventureReward:{date:'',byFactor:{}},
     trainingExp:{date:'',earned:0}
   };
