@@ -79,7 +79,7 @@
         <div class="fighter player-side"><img id="battle-player" alt="主人公"><span id="combo-label">0 COMBO</span></div>
         <main class="question-zone">
           <p id="battle-progress" class="progress-label">1問目</p>
-          <div id="battle-question" class="question-text">1 × 1 ＝ <span id="battle-answer">?</span></div>
+          <div id="battle-question" class="question-text"><span id="battle-kuku-word" class="kuku-word" aria-live="polite"></span><span id="battle-equation" class="question-equation">1 × 1 ＝</span> <span id="battle-answer">?</span></div>
           <div id="battle-feedback" class="feedback" aria-live="assertive"></div>
           <div id="battle-keypad" class="keypad"></div>
         </main>
@@ -109,7 +109,7 @@
       <div class="training-field">
         <img id="training-player" class="training-char" alt="主人公">
         <main class="question-zone calm">
-          <div id="training-question" class="question-text">6 × 7 ＝ <span id="training-answer">?</span></div>
+          <div id="training-question" class="question-text"><span id="training-kuku-word" class="kuku-word" aria-live="polite"></span><span id="training-equation" class="question-equation">6 × 7 ＝</span> <span id="training-answer">?</span></div>
           <div id="training-feedback" class="feedback" aria-live="assertive"></div>
           <div id="training-keypad" class="keypad"></div>
         </main>
@@ -146,6 +146,7 @@
       <div class="settings-card">
         <label><span><strong>効果音</strong><small>BGMはありません</small></span><input id="setting-sound" type="checkbox"></label>
         <label><span><strong>サポートモード</strong><small>HPと時間を増やす</small></span><input id="setting-support" type="checkbox"></label>
+        <label><span><strong>九九表示</strong><small>式の上に「さざんが」などを表示</small></span><input id="setting-kuku-words" type="checkbox"></label>
         <div class="data-note"><strong>保存について</strong><p>レベル・MASTER・苦手・図鑑・コレクションは、この端末に保存されます。</p></div>
       </div>
     </section>
