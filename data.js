@@ -10,47 +10,94 @@ export const CHARACTERS={
   saku:{role:'ヒーラー',stand:`${NAVI}/saku-cleric-healer.webp`,attack:`${NAVI}/attack/saku-cleric-attack.webp`,damage:`${NAVI}/damage/saku-cleric-damage.webp`,special:`${NAVI}/special/saku-cleric-special.webp`}
 };
 
-const MON=`${NAVI}/monsters`;
-export const NORMAL_MONSTERS=[
-  ['forest-puru','もりのプルン',`${MON}/zako/forest-puru.webp`],
-  ['acorn-leafy','どんぐりリーフィ',`${MON}/zako/acorn-leafy.webp`],
-  ['little-bat','こもりん',`${MON}/zako/komorin-little-night-bat.webp`],
-  ['pebble-golem','ころゴーレム',`${MON}/zako/koro-golem-pebble-golem.webp`],
-  ['ember-newt','ひのこイモリ',`${MON}/zako/hinoko-ember-newt.webp`],
-  ['frost-pup','モフウルフ',`${MON}/zako/mofu-wolf-frost-pup.webp`],
-  ['apple-mushroom','りんごキノコ',`${MON}/zako/kinoko-apple-mushroom.webp`],
-  ['snow-puff','ゆきまる',`${MON}/zako/yukimaru-snow-puff.webp`],
-  ['star-bat','スターコウモリ',`${MON}/zako/star-bat.webp`],
-  ['berry-leafy','ベリリーフ',`${MON}/zako/berry-leafy.webp`],
-  ['happa-squirrel-leafy','はっぱリス',`${MON}/zako/happa-squirrel-leafy.webp`],
-  ['yukimaru-snow-puff','ゆきまる（夜）',`${MON}/zako/yukimaru-snow-puff.webp`]
-].map(([id,name,image],i)=>({id,name,image,kind:'normal',factor:i+1}));
+const MON='https://tt-sensei.github.io/navi-character-/assets/web/fantasy/monsters';
 
-// 3体ずつの小さなモンスターグループから段に応じてランダム選出します。
-export const NORMAL_MONSTER_GROUPS=[NORMAL_MONSTERS.slice(0,3).concat(NORMAL_MONSTERS[9]),NORMAL_MONSTERS.slice(3,6).concat(NORMAL_MONSTERS[10]),NORMAL_MONSTERS.slice(6,9).concat(NORMAL_MONSTERS[11])];
+// この九九サイトに出るモンスターは、NAVI Fantasyのモンスターグループ2で統一します。
+// 下の3分割は九九の段ごとの出現ローテーションで、NAVIのグループ番号とは別のものです。
+const GROUP2_ZAKO_BASE=[
+  ['hinoko-ember-newt','ひのこイモリ'],
+  ['koro-golem-pebble-golem','ころゴーレム'],
+  ['yukimaru-snow-puff','ゆきまるスノーパフ'],
+  ['forest-puru','森ぷる'],
+  ['sand-ember-newt','サンドエンバーイモリ'],
+  ['autumn-mushroom','オータムキノコ'],
+  ['rainy-bat','雨ふりバット'],
+  ['sunstone-golem','サンストーンゴーレム'],
+  ['clover-mandragora','クローバーマンドラゴラ'],
+  ['thunder-spark-fox','サンダースパークフォックス'],
+  ['honeycomb-bee','ハニカムビー'],
+  ['ember-lantern-salamander','エンバーランタン・サラマンダー'],
+  ['puddle-mudling','みずたまりマドリン'],
+  ['peach-puff-panda','ピーチパフパンダ'],
+  ['stormhorn-kid','ストームホーンキッド'],
+  ['ironleaf-panther','アイアンリーフパンサー'],
+  ['duskblade-fox','ダスクブレードフォックス'],
+  ['aurora-shell-lizard','オーロラシェルリザード'],
+  ['hollow-hat-scarecrow','ホロウハットかかし'],
+  ['shadow-puppet-cat','シャドウあやつりネコ'],
+  ['cogwheel-beetle','コグホイール甲虫'],
+  ['violet-reef-seahorse','ヴァイオレットリーフタツノオトシゴ'],
+  ['rivet-bloom-beetle','リベットブルーム甲虫'],
+].map(([id,name])=>({id,name,image:`${MON}/zako/${id}.webp`,kind:'normal'}));
+
+const GROUP2_ZAKO_EVOLVED=[
+  ['hinoko-ember-newt','ひのこイモリ'],
+  ['koro-golem-pebble-golem','ころゴーレム'],
+  ['yukimaru-snow-puff','ゆきまるスノーパフ'],
+  ['forest-puru','森ぷる'],
+  ['sand-ember-newt','サンドエンバーイモリ'],
+  ['autumn-mushroom','オータムキノコ'],
+  ['rainy-bat','雨ふりバット'],
+  ['sunstone-golem','サンストーンゴーレム'],
+  ['clover-mandragora','クローバーマンドラゴラ'],
+  ['thunder-spark-fox','サンダースパークフォックス'],
+  ['honeycomb-bee','ハニカムビー'],
+  ['ember-lantern-salamander','エンバーランタン・サラマンダー'],
+  ['puddle-mudling','みずたまりマドリン'],
+  ['peach-puff-panda','ピーチパフパンダ'],
+  ['stormhorn-kid','ストームホーンキッド'],
+  ['ironleaf-panther','アイアンリーフパンサー'],
+  ['duskblade-fox','ダスクブレードフォックス'],
+  ['aurora-shell-lizard','オーロラシェルリザード'],
+  ['hollow-hat-scarecrow','ホロウハットかかし'],
+  ['shadow-puppet-cat','シャドウあやつりネコ'],
+  ['cogwheel-beetle','コグホイール甲虫'],
+  ['violet-reef-seahorse','ヴァイオレットリーフタツノオトシゴ'],
+  ['rivet-bloom-beetle','リベットブルーム甲虫'],
+].map(([id,name])=>({id:`${id}-evolved`,name:`${name}・エボル`,image:`${MON}/zako-evolved/${id}-evolved.webp`,kind:'normal'}));
+
+export const NORMAL_MONSTERS=[...GROUP2_ZAKO_BASE,...GROUP2_ZAKO_EVOLVED]
+  .map((monster,i)=>({...monster,factor:i+1}));
+
+export const NORMAL_MONSTER_GROUPS=[0,1,2].map((groupIndex)=>
+  NORMAL_MONSTERS.filter((_,index)=>index%3===groupIndex)
+);
+
+const GROUP2_BOSSES=[
+  {id:'bakuretsu-boar',name:'ばくれつイノシシ（ボス）',image:`${MON}/boss/bakuretsu-boar.webp`,kind:'boss'},
+  {id:'thunder-griffon',name:'サンダーグリフォン（ボス）',image:`${MON}/boss/thunder-griffon.webp`,kind:'boss'},
+  {id:'berry-boar-king',name:'ベリーイノシシキング（ボス）',image:`${MON}/boss/berry-boar-king.webp`,kind:'boss'},
+  {id:'solar-griffon-king',name:'太陽グリフォンキング（ボス）',image:`${MON}/boss/solar-griffon-king.webp`,kind:'boss'},
+  {id:'dream-cat-mage',name:'夢見ネコメイジ',image:`${MON}/boss/dream-cat-mage.webp`,kind:'boss'},
+  {id:'sky-ruin-griffon',name:'スカイ遺跡グリフォン（ボス）',image:`${MON}/boss/sky-ruin-griffon.webp`,kind:'boss'},
+  {id:'flare-leo',name:'フレアレオ（ボス）',image:`${MON}/boss/flare-leo.webp`,kind:'boss'},
+  {id:'frost-crystal-lion',name:'フロストクリスタルライオン',image:`${MON}/boss/frost-crystal-lion.webp`,kind:'boss'},
+  {id:'coral-tide-serpent',name:'コーラルタイドサーペント（ボス）',image:`${MON}/boss/coral-tide-serpent.webp`,kind:'boss'},
+  {id:'amber-dune-scarab',name:'アンバー砂丘スカラベ（ボス）',image:`${MON}/boss/amber-dune-scarab.webp`,kind:'boss'},
+  {id:'abyssal-mirror-leviathan',name:'深海ミラーリヴァイアサン（ボス）',image:`${MON}/boss/abyssal-mirror-leviathan.webp`,kind:'boss'},
+  {id:'obsidian-comet-wyvern',name:'黒曜コメットワイバーン（ボス）',image:`${MON}/boss/obsidian-comet-wyvern.webp`,kind:'boss'},
+  {id:'magitech-gear-dragon',name:'マギテック・ギアドラゴン（ボス）',image:`${MON}/boss/magitech-gear-dragon.webp`,kind:'boss'},
+];
 
 export const BOSS_CANDIDATES={
-  mid1:[
-    {id:'forest-horn-king',name:'森角王グランリーフ',image:`${MON}/boss/forest-horn-king.webp`,kind:'midboss'},
-    {id:'autumn-horn-king',name:'秋彩角王オータムリーフ',image:`${MON}/boss/autumn-horn-king.webp`,kind:'midboss'},
-    {id:'moss-ruin-horn-king',name:'苔岩角王モスルイン',image:`${MON}/boss/moss-ruin-horn-king.webp`,kind:'midboss'},
-    {id:'dream-cat-mage',name:'ゆめねこ魔導士',image:`${MON}/boss/dream-cat-mage.webp`,kind:'midboss'}
-  ],
-  mid2:[
-    {id:'thunder-griffon',name:'雷翼グリフォン',image:`${MON}/boss/thunder-griffon.webp`,kind:'midboss'},
-    {id:'sky-ruin-griffon',name:'空遺跡グリフォン',image:`${MON}/boss/sky-ruin-griffon.webp`,kind:'midboss'},
-    {id:'solar-griffon-king',name:'太陽翼王ソルグリフォン',image:`${MON}/boss/solar-griffon-king.webp`,kind:'midboss'},
-    {id:'dawn-cat-mage',name:'あかつきねこ魔導士',image:`${MON}/boss/dawn-cat-mage.webp`,kind:'midboss'}
-  ],
-  final:[
-    {id:'crimson-inferno-dragon',name:'紅炎竜インフェルノ',image:`${MON}/boss/crimson-inferno-dragon.webp`,kind:'boss'},
-    {id:'azure-sky-dragon',name:'蒼天竜アズール',image:`${MON}/boss/azure-sky-dragon.webp`,kind:'boss'},
-    {id:'eclipse-shadow-phoenix',name:'蝕影鳥エクリプス',image:`${MON}/boss/eclipse-shadow-phoenix.webp`,kind:'boss'},
-    {id:'twilight-cat-mage',name:'よいやみねこ魔導士',image:`${MON}/boss/twilight-cat-mage.webp`,kind:'boss'}
-  ]
+  mid1:GROUP2_BOSSES.slice(0,4),
+  mid2:GROUP2_BOSSES.slice(4,8),
+  final:GROUP2_BOSSES.slice(8)
 };
 
-export const BOSSES=Object.fromEntries(Object.entries(BOSS_CANDIDATES).map(([id,candidates])=>[id,candidates[0]]));
+export const BOSSES=Object.fromEntries(
+  Object.entries(BOSS_CANDIDATES).map(([id,candidates])=>[id,candidates[0]])
+);
 
 export const BACKGROUNDS={home:`${NAVI}/backgrounds/town.webp`,training:`${NAVI}/backgrounds/training-ground.webp`,normal:`${NAVI}/backgrounds/grassland.webp`,mid1:`${NAVI}/backgrounds/forest.webp`,mid2:`${NAVI}/backgrounds/sky-island.webp`,final:`${NAVI}/backgrounds/volcano.webp`};
 
