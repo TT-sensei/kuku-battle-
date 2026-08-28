@@ -25,3 +25,9 @@
 .question-text .kuku-word{display:block;min-height:1.2em;min-width:0;color:var(--blue);font-size:.44em;line-height:1.15;letter-spacing:.08em;margin-bottom:3px}
 .question-text .kuku-word[hidden]{display:none!important}
 .question-text .question-equation{min-width:0;color:inherit}
+/* 冒険マップ：選択画面にもファンタジーの景色を表示 */
+#adventure{position:relative;isolation:isolate;overflow:hidden}
+#adventure::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 12% 12%,rgba(255,255,255,.30),transparent 30%),linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,253,248,.20))}
+#adventure::after{content:'✦  ✧  ✦';position:absolute;right:4%;bottom:5%;z-index:0;color:rgba(227,169,47,.38);font-size:clamp(2rem,5vw,4rem);letter-spacing:.3em;transform:rotate(-9deg);pointer-events:none}
+#adventure>.screen-head,#adventure>#stage-grid,#adventure>.section-title,#adventure>#boss-grid{position:relative;z-index:1}
+#adventure .stage-card,#adventure .boss-card{background:rgba(255,255,255,.88);backdrop-filter:blur(5px);box-shadow:0 8px 20px rgba(23,50,77,.12)}
