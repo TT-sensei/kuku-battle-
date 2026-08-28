@@ -112,7 +112,7 @@ function renderCharacters(partnerMode){
 
 function renderAdventure(){
   const adventure=$('#adventure');
-  adventure.style.backgroundImage=`linear-gradient(180deg,rgba(247,245,232,.70),rgba(255,253,248,.90)),url("${BACKGROUNDS.adventure}")`;
+  adventure.style.backgroundImage=`linear-gradient(180deg,rgba(247,245,232,.42),rgba(255,253,248,.68)),url("${BACKGROUNDS.adventure}")`;
   adventure.style.backgroundSize='cover';
   adventure.style.backgroundPosition='center';
   const stages=$('#stage-grid'); stages.innerHTML='';
