@@ -19,3 +19,9 @@
 .home-head .eyebrow{color:#a56a1c}.mode-card.adventure{background:linear-gradient(135deg,#17324d 0%,#276ca8 62%,#3e8f88 100%);border:2px solid rgba(255,255,255,.18)}
 .mode-card.training{background:linear-gradient(135deg,#fff5d8 0%,#fff 58%,#e7f5ec 100%);border-color:#d6ad55}.mode-card{position:relative;overflow:hidden}.mode-card::after{content:'✧';position:absolute;right:22px;top:12px;color:rgba(255,255,255,.46);font-size:2rem}.mode-card.training::after{color:rgba(165,106,28,.34)}
 @media(max-width:600px){.home-screen::before{top:4%;right:2%;font-size:1.6rem}.home-head h1{font-size:clamp(1.9rem,9vw,3rem)}}
+
+
+/* 九九のことば表示 */
+.question-text .kuku-word{display:block;min-height:1.2em;min-width:0;color:var(--blue);font-size:.44em;line-height:1.15;letter-spacing:.08em;margin-bottom:3px}
+.question-text .kuku-word[hidden]{display:none!important}
+.question-text .question-equation{min-width:0;color:inherit}
