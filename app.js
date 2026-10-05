@@ -189,7 +189,7 @@ function startBattle(){
   const bag=config.kind==='normal'
     ?new QuestionBag(()=>stageQuestions(config.factor,config.mode))
     :new QuestionBag(()=>bossQuestions(config.min,config.max));
-  battle={config,input,score,combo,bag,playerHp:config.playerMaxHp,enemyHp:config.enemyMaxHp,current:null,wrongKeys:new Set(),asked:0,locked:false,ended:false,startedAt:Date.now(),timer:null};
+  battle={config,input,score,combo,bag,playerHp:config.playerMaxHp,enemyHp:config.enemyMaxHp,current:null,wrongKeys:new Set(),asked:0,wrongStreak:0,locked:false,ended:false,startedAt:Date.now(),timer:null};
   battle.timer=new CountdownTimer(config.time,{eventTarget,onTick:(remaining)=>$('#battle-time').textContent=remaining,warningAt:[10]});
   eventTarget.addEventListener(EDU_EVENTS.TIMEUP,()=>finishBattle(false,'time'));
   setImage($('#battle-player'),CHARACTERS[state.selectedCharacter].stand);
@@ -202,9 +202,9 @@ function startBattle(){
 
 function nextBattleQuestion(){
   if(!battle || battle.ended) return;
-  battle.current=battle.bag.next(); battle.asked+=1; battle.input.value='';
+  battle.current=battle.bag.next(); battle.asked+=1; battle.wrongStreak=0; battle.input.value='';
   renderQuestion('battle',battle.current);
-  $('#battle-answer').value=''; $('#battle-feedback').textContent='';
+  $('#battle-answer').value=''; $('#battle-answer').placeholder='？'; $('#battle-answer').classList.remove('answer-hint'); $('#battle-feedback').textContent='';
   $('#battle-answer').focus({preventScroll:true});
   $('#battle-progress').textContent=`${battle.asked}問目｜あと${battle.enemyHp}回 正解で撃破`;
   battle.locked=false;
@@ -239,8 +239,9 @@ function submitBattleAnswer(raw){
     if(battle.enemyHp<=0) setTimeout(()=>finishBattle(true,'defeat-enemy'),delay);
     else setTimeout(nextBattleQuestion,delay);
   }else{
-    battle.score.wrong(); battle.combo.wrong(); battle.playerHp-=1; battle.wrongKeys.add(q.key);
-    $('#battle-feedback').textContent='ちょっとちがうよ。もう一度！';
+    battle.score.wrong(); battle.combo.wrong(); battle.playerHp-=1; battle.wrongKeys.add(q.key); battle.wrongStreak+=1;
+    if(battle.wrongStreak>=3){ battle.input.placeholder=String(q.answer); battle.input.classList.add('answer-hint'); $('#battle-feedback').textContent='答えがうっすら見えているよ。数字を入れてみよう！'; }
+    else $('#battle-feedback').textContent='ちょっとちがうよ。もう一度！';
     swapPlayerPose('damage',650); playSound('wrong'); updateBattleHud();
     if(battle.playerHp<=0) setTimeout(()=>finishBattle(false,'hp'),550);
     else setTimeout(()=>{
