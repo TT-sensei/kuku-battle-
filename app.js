@@ -1,4 +1,4 @@
-import { EDU_EVENTS, StorageManager, ScreenManager, NumberInput, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
+import { EDU_EVENTS, StorageManager, ScreenManager, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
 import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, ALL_COLLECTIONS, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
@@ -157,8 +157,13 @@ function setupKeypad(container,input,onSubmit,onChange){
     const button=document.createElement('button'); button.type='button'; button.dataset.key=key;
     button.textContent=key==='delete'?'×':key==='enter'?'決定':key;
     button.addEventListener('click',()=>{
-      if(key==='enter') onSubmit(input.value);
-      else { input.press(key); onChange(input.value); }
+      if(key==='enter'){
+        onSubmit(input.value);
+        return;
+      }
+      if(key==='delete') input.value=input.value.slice(0,-1);
+      else if(input.value.length<2) input.value+=key;
+      onChange(input.value);
     });
     container.append(button);
   });
@@ -178,7 +183,7 @@ function battleConfig(){
 function startBattle(){
   const config=battleConfig();
   const eventTarget=new EventTarget();
-  const input=new NumberInput({answer:0},{eventTarget:document});
+  const input=$('#battle-answer');
   const score=new ScoreManager();
   const combo=new ComboManager({eventTarget:document});
   const bag=config.kind==='normal'
@@ -197,9 +202,10 @@ function startBattle(){
 
 function nextBattleQuestion(){
   if(!battle || battle.ended) return;
-  battle.current=battle.bag.next(); battle.asked+=1; battle.input.reset({answer:battle.current.answer});
+  battle.current=battle.bag.next(); battle.asked+=1; battle.input.value='';
   renderQuestion('battle',battle.current);
-  $('#battle-answer').textContent='?'; $('#battle-feedback').textContent='';
+  $('#battle-answer').value=''; $('#battle-feedback').textContent='';
+  $('#battle-answer').focus({preventScroll:true});
   $('#battle-progress').textContent=`${battle.asked}問目｜あと${battle.enemyHp}回 正解で撃破`;
   battle.locked=false;
 }
@@ -234,10 +240,16 @@ function submitBattleAnswer(raw){
     else setTimeout(nextBattleQuestion,delay);
   }else{
     battle.score.wrong(); battle.combo.wrong(); battle.playerHp-=1; battle.wrongKeys.add(q.key);
-    $('#battle-feedback').textContent=`${formatFormula(q)}　ここを特訓しよう！`;
+    $('#battle-feedback').textContent='ちょっとちがうよ。もう一度！';
     swapPlayerPose('damage',650); playSound('wrong'); updateBattleHud();
     if(battle.playerHp<=0) setTimeout(()=>finishBattle(false,'hp'),550);
-    else setTimeout(nextBattleQuestion,700);
+    else setTimeout(()=>{
+      if(!battle || battle.ended || battle.current!==q) return;
+      battle.input.value='';
+      $('#battle-feedback').textContent='もう一度、考えてみよう！';
+      battle.locked=false;
+      battle.input.focus({preventScroll:true});
+    },700);
   }
   if(stat.reviewActive) battle.wrongKeys.add(q.key);
 }
@@ -335,7 +347,7 @@ function renderTrainingMenu(){
 
 function startTraining(type,factor=null,preferredKeys=[],returnBattle=null){
   const seed=trainingSeed(state,type,factor,preferredKeys);
-  const input=new NumberInput({answer:0},{eventTarget:document});
+  const input=$('#training-answer');
   training={type,factor,preferredKeys,returnBattle,input,scheduler:new TrainingScheduler(seed),score:new ScoreManager(),locked:false,beforeQueue:new Set(state.reviewQueue)};
   $('#training').style.backgroundImage=`url("${BACKGROUNDS.training}")`;
   $('#training').style.backgroundSize='cover';
@@ -351,9 +363,10 @@ function startTraining(type,factor=null,preferredKeys=[],returnBattle=null){
 function renderTrainingQuestion(){
   const q=training.scheduler.current();
   if(!q){ finishTraining(); return; }
-  training.input.reset({answer:q.answer}); training.locked=false;
+  training.input.value=''; training.locked=false;
   renderQuestion('training',q);
-  $('#training-answer').textContent='?'; $('#training-feedback').textContent='';
+  $('#training-answer').value=''; $('#training-feedback').textContent='';
+  $('#training-answer').focus({preventScroll:true});
   $('#training-remaining').textContent=10-training.scheduler.index;
 }
 
@@ -443,9 +456,23 @@ $('#prep-support').addEventListener('change',(e)=>{state.supportMode=e.target.ch
 document.addEventListener('keydown',(event)=>{
   const current=screenManager.getCurrent(); const session=current==='battle'?battle:current==='training'?training:null;
   if(!session || session.locked) return;
-  if(/^\d$/.test(event.key)){session.input.press(event.key);$(current==='battle'?'#battle-answer':'#training-answer').textContent=session.input.value||'?';}
-  else if(event.key==='Backspace'){event.preventDefault();session.input.press('delete');$(current==='battle'?'#battle-answer':'#training-answer').textContent=session.input.value||'?';}
-  else if(event.key==='Enter'){event.preventDefault();current==='battle'?submitBattleAnswer(session.input.value):submitTrainingAnswer(session.input.value);}
+  const input=current==='battle'?$('#battle-answer'):$('#training-answer');
+  if(/^\d$/.test(event.key)){
+    event.preventDefault();
+    if(input.value.length<2) input.value+=event.key;
+  }else if(event.key==='Backspace'){
+    event.preventDefault();
+    input.value=input.value.slice(0,-1);
+  }else if(event.key==='Enter'){
+    event.preventDefault();
+    current==='battle'?submitBattleAnswer(input.value):submitTrainingAnswer(input.value);
+  }
+});
+
+$(".answer-input").forEach((input)=>{
+  input.addEventListener('input',()=>{
+    input.value=input.value.replace(/\D/g,'').slice(0,2);
+  });
 });
 
 document.addEventListener(EDU_EVENTS.CORRECT,()=>{
