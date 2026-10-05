@@ -476,7 +476,7 @@ document.addEventListener('keydown',(event)=>{
   }
 });
 
-$(".answer-input").forEach((input)=>{
+$$(".answer-input").forEach((input)=>{
   input.addEventListener('input',()=>{
     input.value=input.value.replace(/\D/g,'').slice(0,2);
   });
