@@ -196,7 +196,7 @@ function startBattle(){
   setImage($('#battle-enemy'),config.monster.image);
   $('#battle-enemy-name').textContent=config.monster.name;
   $('#battle-field').style.backgroundImage=`linear-gradient(rgba(235,245,240,.12),rgba(25,50,74,.12)),url("${config.background}")`;
-  setupKeypad($('#battle-keypad'),input,submitBattleAnswer,(value)=>$('#battle-answer').textContent=value||'?');
+  setupKeypad($('#battle-keypad'),input,submitBattleAnswer,()=>{});
   updateBattleHud(); nextBattleQuestion(); show('battle'); battle.timer.start();
 }
 
@@ -356,7 +356,7 @@ function startTraining(type,factor=null,preferredKeys=[],returnBattle=null){
   setImage($('#training-player'),CHARACTERS[state.selectedCharacter].stand);
   setImage($('#training-partner'),CHARACTERS[state.trainingPartner].stand);
   $('#partner-speech').textContent='いっしょにやろう！';
-  setupKeypad($('#training-keypad'),input,submitTrainingAnswer,(value)=>$('#training-answer').textContent=value||'?');
+  setupKeypad($('#training-keypad'),input,submitTrainingAnswer,()=>{});
   show('training'); renderTrainingQuestion();
 }
 
@@ -457,6 +457,13 @@ document.addEventListener('keydown',(event)=>{
   const current=screenManager.getCurrent(); const session=current==='battle'?battle:current==='training'?training:null;
   if(!session || session.locked) return;
   const input=current==='battle'?$('#battle-answer'):$('#training-answer');
+  if(event.target?.classList?.contains('answer-input')){
+    if(event.key==='Enter'){
+      event.preventDefault();
+      current==='battle'?submitBattleAnswer(input.value):submitTrainingAnswer(input.value);
+    }
+    return;
+  }
   if(/^\d$/.test(event.key)){
     event.preventDefault();
     if(input.value.length<2) input.value+=event.key;
