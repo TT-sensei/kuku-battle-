@@ -164,14 +164,16 @@
     <section id="collection" class="screen panel-screen" hidden>
       <header class="screen-head"><button class="back" data-go="home">← ホーム</button><div><p class="eyebrow">学習した結果の宝物</p><h2>コレクション</h2></div></header>
       <section class="collection-section" aria-labelledby="badge-section-title">
-        <div class="collection-section-head"><div><p class="eyebrow">LEARNING ACHIEVEMENTS</p><h3 id="badge-section-title">学びのバッジ</h3></div><p id="badge-count" class="collection-count">バッジ 0 / 17 個</p></div>
-        <p class="collection-section-note">練習やクリアの記録に合わせて獲得するよ。ランダムではなく、達成した条件がバッジになるよ。</p>
+        <div class="collection-section-head"><div><p class="eyebrow">LEARNING & MATH SKILLS</p><h3 id="badge-section-title">学びと算数のバッジ</h3></div><p id="badge-count" class="collection-count">獲得 0 個</p></div>
+        <p class="collection-section-note">練習・正確さ・苦手克服・81問への挑戦・冒険の達成で集めよう。条件が記録で確認できるバッジは進み具合も表示。図形や分数など、この九九アプリでは判定できない算数スキルは、別の学習で活躍する目標として残してあるよ。</p>
+        <div class="badge-filter-row" role="group" aria-label="バッジの表示">
+          <button type="button" data-badge-filter="all" class="selected" aria-pressed="true">すべて</button>
+          <button type="button" data-badge-filter="earned" aria-pressed="false">獲得済み</button>
+          <button type="button" data-badge-filter="unearned" aria-pressed="false">未獲得</button>
+          <button type="button" data-badge-filter="near" aria-pressed="false">もう少し</button>
+          <span id="badge-filter-count">すべて表示</span>
+        </div>
         <div id="badge-grid" class="achievement-grid"></div>
-      </section>
-      <section class="collection-section" aria-labelledby="math-badge-section-title">
-        <div class="collection-section-head"><div><p class="eyebrow">MATH SKILLS</p><h3 id="math-badge-section-title">算数スキルバッジ</h3></div><p id="math-badge-count" class="collection-count"></p></div>
-        <p class="collection-section-note">計算・数感覚・図形・説明など、算数のいろいろな力を表すバッジだよ。</p>
-        <div id="math-badge-grid" class="achievement-grid"></div>
       </section>
       <section class="collection-section" aria-labelledby="collection-section-title">
         <div class="collection-section-head"><div><p class="eyebrow">FANTASY COLLECTION</p><h3 id="collection-section-title">ファンタジーコレクション</h3></div><p id="collection-count" class="collection-count"></p></div>
