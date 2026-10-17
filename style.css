@@ -162,3 +162,30 @@
 
 /* 学習状況の4項目は、狭い画面では2列で読みやすく表示 */
 @media(max-width:760px){.map-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* 81問の九九チェックボード */
+.fact-check-card{margin-top:18px;padding:18px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:20px}
+.fact-check-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}
+.fact-check-heading h3{margin:0;font-size:1.2rem}
+.fact-check-heading p:last-child{margin:0;color:var(--muted);font-size:.86rem}
+.fact-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:10px 0 14px;font-size:.78rem;color:var(--muted)}
+.fact-legend span{display:inline-flex;align-items:center;gap:6px}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;border:1px solid #c8d2da}
+.legend-dot.needs-review{background:#ffe1d8;border-color:#d97b63}
+.legend-dot.retained{background:#d7f0df;border-color:#5d9d72}
+.legend-dot.recorded{background:#dceafa;border-color:#7b9fc8}
+.legend-dot.unseen{background:#f0f2f4}
+.fact-board-scroll{overflow-x:auto;padding:2px 0 6px}
+.fact-board{display:grid;grid-template-columns:34px repeat(9,minmax(34px,1fr));gap:4px;min-width:390px}
+.fact-axis{display:grid;place-items:center;min-height:27px;color:var(--muted);font-size:.75rem;font-weight:800}
+.fact-axis-corner{display:grid;place-items:center;font-weight:900;color:var(--muted)}
+.fact-row-axis{background:#f1f4f6;border-radius:7px}
+.fact-cell{min-width:0;min-height:35px;padding:4px 1px;border:1px solid #d8e0e6;border-radius:8px;background:#f0f2f4;color:var(--ink);font-size:.82rem;font-weight:850;cursor:pointer;touch-action:manipulation}
+.fact-cell.needs-review{background:#fff0eb;border-color:#e3a18e;color:#8b3420}
+.fact-cell.retained{background:#e6f6eb;border-color:#8bc39b;color:#215b34}
+.fact-cell.recorded{background:#eaf2fc;border-color:#a9c4e5;color:#254c79}
+.fact-cell:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.fact-cell:active{transform:scale(.96)}
+@media(max-width:600px){.fact-check-card{padding:12px}.fact-check-heading{align-items:flex-start;flex-direction:column;gap:5px}.fact-check-heading p:last-child{font-size:.8rem}.fact-board{grid-template-columns:28px repeat(9,minmax(28px,1fr));gap:3px;min-width:310px}.fact-cell{min-height:31px;font-size:.76rem}.fact-axis{min-height:24px;font-size:.7rem}}
+@media(prefers-reduced-motion:reduce){.fact-cell:active{transform:none}}
