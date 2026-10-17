@@ -681,3 +681,12 @@
 .achievement-card.catalog-only{opacity:.78}
 .achievement-card.catalog-only .badge-progress{font-weight:500}
 @media(max-width:520px){.badge-filter-row{gap:.35rem}.badge-filter-row button{padding:.48rem .7rem;font-size:.82rem}.badge-filter-row span{width:100%;margin-left:0}}
+
+
+/* 小学2年生向けのふりがな */
+ruby.auto-furigana{ruby-position:over;text-decoration:none}
+ruby.auto-furigana rt{font-size:.56em;font-weight:600;line-height:1;color:inherit;letter-spacing:0;user-select:none}
+ruby.auto-furigana{line-height:1.7}
+@media(max-width:600px){
+  ruby.auto-furigana rt{font-size:.52em}
+}
