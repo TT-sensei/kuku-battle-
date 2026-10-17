@@ -122,6 +122,20 @@ export const MATH_BADGES=[
   ['visualize','見える化マスター']
 ].map(([id,name])=>({id:`math-${id}`,name,rarity:'common',category:'math',image:`${MATH_ASSETS}/${id}/badge.webp`}));
 
+const MATH_ASSETS='https://tt-sensei.github.io/edu-assets/assets/web/badges/math';
+export const MATH_BADGES=[
+  ['calculation','計算マスター'],['mental-math','暗算マスター'],['number-sense','数感覚マスター'],
+  ['number-line','数直線マスター'],['fraction-sense','分数感覚マスター'],['geometry','図形マスター'],
+  ['measurement','量感マスター'],['spatial-sense','空間感覚マスター'],['pattern','きまり発見マスター'],
+  ['relationship','関係発見マスター'],['strategy','作戦マスター'],['verification','確かめマスター'],
+  ['simplify','すっきり整理マスター'],['another-way','別解発見マスター'],['classification','仲間分けマスター'],
+  ['generalization','きまり説明マスター'],['logical-thinking','論理思考マスター'],['math-compare','比べ方マスター'],
+  ['math-discovery','算数発見マスター'],['math-evidence','根拠説明マスター'],['math-explainer','算数説明マスター'],
+  ['math-prediction','予想マスター'],['representation-link','表現つなぎマスター'],['reverse-thinking','逆思考マスター'],
+  ['visualize','見える化マスター']
+].map(([id,name])=>({id:`math-${id}`,name,rarity:'common',category:'math',image:`${MATH_ASSETS}/${id}/badge.webp`}));
+
+
 // 学習の達成バッジは、実際の学習記録から条件達成を判定する。ランダム報酬にはしない。
 const BADGE_ASSETS='https://tt-sensei.github.io/edu-assets/assets/web/badges/common';
 export const ACHIEVEMENT_BADGES=[
