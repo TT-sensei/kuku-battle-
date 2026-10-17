@@ -15,13 +15,21 @@
   <div id="app">
     <section id="home" class="screen home-screen" aria-labelledby="title">
       <header class="home-head">
-        <div>
+        <div class="home-title-block">
           <p class="eyebrow">九九をおぼえて、また強くなる冒険</p>
           <h1 id="title">九九ファンタジーバトル</h1>
           <p class="hero-copy">できなかった九九は、仲間と特訓。できるようになったら、もう一度バトルへ！</p>
         </div>
         <div class="profile-pill"><span id="home-role">剣士</span><strong>Lv.<span id="home-level">1</span></strong></div>
       </header>
+      <section class="home-continue-card" aria-label="つぎにすること">
+        <div class="home-continue-copy">
+          <span class="home-continue-kicker">YOUR NEXT STEP</span>
+          <strong id="home-next-title">冒険のじゅんびはできた？</strong>
+          <span id="home-next-detail">九九をれんしゅうして、仲間と冒険しよう。</span>
+        </div>
+        <button id="home-continue" class="home-continue-button" type="button">はじめる <span aria-hidden="true">→</span></button>
+      </section>
       <div class="home-main-actions">
         <button class="mode-card adventure" data-go="adventure"><span class="mode-icon">⚔️</span><span><strong>ぼうけん</strong><small>モンスターと九九バトル</small></span></button>
         <button class="mode-card training" data-go="training-menu"><span class="mode-icon">📖</span><span><strong>特訓</strong><small>仲間と苦手を練習</small></span></button>
@@ -29,10 +37,13 @@
       <nav class="subnav" aria-label="補助メニュー">
         <button data-go="map">九九マップ</button><button data-go="book">ナビアン図鑑</button><button data-go="collection">コレクション</button><button data-go="settings">せってい</button>
       </nav>
-      <div class="home-footer-card">
-        <img id="home-character" alt="選んだ冒険の主人公">
-        <div><strong id="home-review">苦手な九九はまだありません</strong><span>バトルと特訓の記録は、この端末に保存されます。</span></div>
-        <button class="text-button" data-go="characters">主人公をかえる</button>
+      <div class="home-world-strip">
+        <img class="home-world-art" src="https://tt-sensei.github.io/navi-character-/assets/web/fantasy/groups/group-fantasy-town.webp" alt="" loading="lazy">
+        <div class="home-footer-card">
+          <img id="home-character" alt="選んだ冒険の主人公">
+          <div><strong id="home-review">苦手な九九はまだありません</strong><span>バトルと特訓の記録は、この端末に保存されます。</span></div>
+          <button class="text-button" data-go="characters">主人公をかえる</button>
+        </div>
       </div>
     </section>
 
@@ -125,10 +136,16 @@
       <div id="result-actions" class="result-actions"></div>
     </section>
 
-    <section id="map" class="screen panel-screen" hidden>
-      <header class="screen-head"><button class="back" data-go="home">← ホーム</button><div><p class="eyebrow">実績と今の習熟を別々に表示</p><h2>九九マップ</h2></div></header>
+    <section id="map" class="screen panel-screen map-screen" hidden>
+      <header class="screen-head"><button class="back" data-go="home">← ホーム</button><div><p class="eyebrow">できる段をふやしていこう</p><h2>九九マップ</h2></div></header>
+      <section class="map-overview" aria-label="九九の学習状況">
+        <div><span>クリアした段</span><strong id="map-cleared-count">0 / 9</strong></div>
+        <div><span>マスター</span><strong id="map-master-count">0段</strong></div>
+        <div><span>特訓する九九</span><strong id="map-weak-count">0問</strong></div>
+      </section>
+      <p class="map-instruction">段をえらぶと、のぼり・くだり・ランダムにちょうせんできるよ。</p>
       <div id="map-grid" class="map-grid"></div>
-      <div class="recommend-card"><h3>特訓おすすめ</h3><div id="recommend-list"></div></div>
+      <section class="recommend-card map-recommend"><div class="recommend-heading"><div><p class="eyebrow">NEXT PRACTICE</p><h3>いまのおすすめ</h3></div><span class="recommend-icon" aria-hidden="true">✦</span></div><p class="recommend-copy">まちがえた九九を、もう一度れんしゅうしよう。</p><div id="recommend-list"></div></section>
     </section>
 
     <section id="book" class="screen panel-screen" hidden>
