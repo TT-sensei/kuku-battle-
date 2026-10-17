@@ -110,46 +110,46 @@ export const COLLECTIONS=[
 ].map(([id,name,rarity])=>({id,name,rarity,image:`${ASSETS}/${rarity}/${id}/badge.webp`}));
 
 const MATH_ASSETS='https://tt-sensei.github.io/edu-assets/assets/web/badges/math';
+const MATH_BADGE_IMAGES={
+  calculation:'accuracy', 'mental-math':'speed', 'number-sense':'discovery',
+  'number-line':'explorer', 'fraction-sense':'knowledge', geometry:'idea',
+  measurement:'focus', 'spatial-sense':'observer', pattern:'discovery',
+  relationship:'connection', strategy:'problem-solver', verification:'great-answer',
+  simplify:'clear', 'another-way':'creative', classification:'connection',
+  generalization:'deep-thinker', 'logical-thinking':'deep-thinker', 'math-compare':'explorer',
+  'math-discovery':'curiosity', 'math-evidence':'great-answer', 'math-explainer':'explainer',
+  'math-prediction':'idea', 'representation-link':'knowledge', 'reverse-thinking':'try-again',
+  visualize:'observer'
+};
 export const MATH_BADGES=[
-  ['calculation','計算マスター'],['mental-math','暗算マスター'],['number-sense','数感覚マスター'],
-  ['number-line','数直線マスター'],['fraction-sense','分数感覚マスター'],['geometry','図形マスター'],
-  ['measurement','量感マスター'],['spatial-sense','空間感覚マスター'],['pattern','きまり発見マスター'],
-  ['relationship','関係発見マスター'],['strategy','作戦マスター'],['verification','確かめマスター'],
-  ['simplify','すっきり整理マスター'],['another-way','別解発見マスター'],['classification','仲間分けマスター'],
-  ['generalization','きまり説明マスター'],['logical-thinking','論理思考マスター'],['math-compare','比べ方マスター'],
-  ['math-discovery','算数発見マスター'],['math-evidence','根拠説明マスター'],['math-explainer','算数説明マスター'],
-  ['math-prediction','予想マスター'],['representation-link','表現つなぎマスター'],['reverse-thinking','逆思考マスター'],
-  ['visualize','見える化マスター']
-].map(([id,name])=>({
-  id:`math-${id}`,name,rarity:'common',category:'math',
-  criteria:({
-    calculation:'10回以上回答し、正答率85%以上',
-    'mental-math':'27回以上正解し、正答率80%以上',
-    'number-sense':'異なる九九を45問以上記録',
-    'number-line':'このアプリでは獲得判定しない',
-    'fraction-sense':'このアプリでは獲得判定しない',
-    geometry:'このアプリでは獲得判定しない',
-    measurement:'このアプリでは獲得判定しない',
-    'spatial-sense':'このアプリでは獲得判定しない',
-    pattern:'3つの段でMASTERを達成',
-    relationship:'逆向きの九九も正解した組を6組以上',
-    strategy:'段のモードを3つ以上クリア',
-    verification:'ノーミスで1モード以上クリア',
-    simplify:'このアプリでは獲得判定しない',
-    'another-way':'このアプリでは獲得判定しない',
-    classification:'このアプリでは獲得判定しない',
-    generalization:'このアプリでは獲得判定しない',
-    'logical-thinking':'このアプリでは獲得判定しない',
-    'math-compare':'このアプリでは獲得判定しない',
-    'math-discovery':'異なる九九を40問以上記録',
-    'math-evidence':'このアプリでは獲得判定しない',
-    'math-explainer':'このアプリでは獲得判定しない',
-    'math-prediction':'このアプリでは獲得判定しない',
-    'representation-link':'このアプリでは獲得判定しない',
-    'reverse-thinking':'逆向きの九九も正解した組を18組以上',
-    visualize:'このアプリでは獲得判定しない'
-  })[id],
-  image:`${MATH_ASSETS}/${id}/badge.webp`
+  ['calculation','計算マスター','計算を積み重ねた','回答10回以上・正答率85%以上'],
+  ['mental-math','暗算マスター','テンポよく正解を重ねた','正解27回以上'],
+  ['number-sense','数感覚マスター','いろいろな九九に挑戦','異なる九九9種類以上'],
+  ['number-line','数直線マスター','冒険の道を進んだ','ステージ1モード以上クリア'],
+  ['fraction-sense','分数感覚マスター','3つの練習スタイルを体験','ステージ3モード以上クリア'],
+  ['geometry','図形マスター','4段の冒険を制覇','4の段を3モードすべてクリア'],
+  ['measurement','量感マスター','ノーミスで3回クリア','ノーミスクリア3モード以上'],
+  ['spatial-sense','空間感覚マスター','ひとつの段をマスター','MASTERの段1つ以上'],
+  ['pattern','きまり発見マスター','3つの段のきまりをつかんだ','MASTERの段3つ以上'],
+  ['relationship','関係発見マスター','九九の逆向きの関係を発見','逆向きも正解した組3組以上'],
+  ['strategy','攻略マスター','いろいろなモードで攻略','クリアモード3つ以上'],
+  ['verification','確かめマスター','ノーミスクリアを達成','ノーミスクリア1モード以上'],
+  ['simplify','すっきり整理マスター','正確さを積み重ねた','回答9回以上・正答率75%以上'],
+  ['another-way','別解発見マスター','まちがいのあとに立て直した','誤答後の正解1回以上'],
+  ['classification','仲間分けマスター','ナビアン図鑑を広げた','ナビアン5種類以上撃破'],
+  ['generalization','きまり説明マスター','3つの段をマスター','MASTERの段3つ以上'],
+  ['logical-thinking','論理思考マスター','多くの九九で正解を記録','正解記録のある九九27種類以上'],
+  ['math-compare','比べ方マスター','九九の種類を広げた','異なる九九18種類以上'],
+  ['math-discovery','算数発見マスター','九九の世界を探検','異なる九九40種類以上'],
+  ['math-evidence','根拠マスター','ノーミスクリアを重ねた','ノーミスクリア3モード以上'],
+  ['math-explainer','算数説明マスター','正解を積み重ねた','正解27回以上'],
+  ['math-prediction','予想マスター','冒険者レベルを上げた','レベル3以上'],
+  ['representation-link','表現つなぎマスター','九九の半分以上に挑戦','異なる九九54種類以上'],
+  ['reverse-thinking','逆思考マスター','逆向きの九九をたくさん発見','逆向きも正解した組18組以上'],
+  ['visualize','見える化マスター','4の段を制覇','4の段を3モードすべてクリア']
+].map(([id,name,description,criteria])=>({
+  id:`math-${id}`,name,description,criteria,rarity:'common',category:'math',
+  image:`https://tt-sensei.github.io/edu-assets/assets/web/badges/common/${MATH_BADGE_IMAGES[id]}/badge.webp`
 }));
 
 
