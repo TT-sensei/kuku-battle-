@@ -120,7 +120,37 @@ export const MATH_BADGES=[
   ['math-discovery','算数発見マスター'],['math-evidence','根拠説明マスター'],['math-explainer','算数説明マスター'],
   ['math-prediction','予想マスター'],['representation-link','表現つなぎマスター'],['reverse-thinking','逆思考マスター'],
   ['visualize','見える化マスター']
-].map(([id,name])=>({id:`math-${id}`,name,rarity:'common',category:'math',image:`${MATH_ASSETS}/${id}/badge.webp`}));
+].map(([id,name])=>({
+  id:`math-${id}`,name,rarity:'common',category:'math',
+  criteria:({
+    calculation:'10回以上回答し、正答率85%以上',
+    'mental-math':'27回以上正解し、正答率80%以上',
+    'number-sense':'異なる九九を54問以上記録',
+    'number-line':'このアプリでは獲得判定しない',
+    'fraction-sense':'このアプリでは獲得判定しない',
+    geometry:'このアプリでは獲得判定しない',
+    measurement:'このアプリでは獲得判定しない',
+    'spatial-sense':'このアプリでは獲得判定しない',
+    pattern:'3つの段でMASTERを達成',
+    relationship:'逆向きの九九も正解した組を6組以上',
+    strategy:'段のモードを3つ以上クリア',
+    verification:'ノーミスで1モード以上クリア',
+    simplify:'このアプリでは獲得判定しない',
+    'another-way':'このアプリでは獲得判定しない',
+    classification:'このアプリでは獲得判定しない',
+    generalization:'このアプリでは獲得判定しない',
+    'logical-thinking':'このアプリでは獲得判定しない',
+    'math-compare':'このアプリでは獲得判定しない',
+    'math-discovery':'異なる九九を27問以上記録',
+    'math-evidence':'このアプリでは獲得判定しない',
+    'math-explainer':'このアプリでは獲得判定しない',
+    'math-prediction':'このアプリでは獲得判定しない',
+    'representation-link':'このアプリでは獲得判定しない',
+    'reverse-thinking':'逆向きの九九も正解した組を18組以上',
+    visualize:'このアプリでは獲得判定しない'
+  })[id],
+  image:`${MATH_ASSETS}/${id}/badge.webp`
+}));
 
 
 // 学習の達成バッジは、実際の学習記録から条件達成を判定する。ランダム報酬にはしない。
