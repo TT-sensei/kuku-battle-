@@ -79,11 +79,9 @@ const restored=migrateState(JSON.parse(JSON.stringify({...state,playerLevel:12,c
 assert.equal(restored.playerLevel,12);
 assert.deepEqual(restored.collections,['dragon']);
 assert.equal(restored.multiplicationStats['6x7'].wrong,1);
-for (const f of [2,3,4,5]) state.stageProgress[f].random.cleared=true;
-assert.equal(isBossUnlocked(state,'mid1'),true);
-assert.equal(isBossUnlocked(state,'mid2'),false);
-state.bossProgress.mid1.defeated=true; state.bossProgress.mid2.defeated=true;
-assert.equal(isBossUnlocked(state,'final'),true);
+// ボスは学習順序を固定せず、最初からすべて選べる。
+for (const id of ['mid1','mid2','final']) assert.equal(isBossUnlocked(defaultState(),id),true);
+assert.equal(isBossUnlocked(defaultState(),'unknown'),false);
 state.stageProgress[7].up.cleared=true; state.stageProgress[7].down.cleared=true;
 state.stageProgress[7].random={cleared:true,noMiss:true};
 assert.equal(isMaster(state,7),true);
