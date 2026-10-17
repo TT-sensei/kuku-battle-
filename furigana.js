@@ -359,7 +359,7 @@ const READING_PAIRS = [
   ['実際','じっさい'],
   ['判定','はんてい'],
   ['突破','とっぱ'],
-  ['体以上撃破','たい以上げきは'],
+  ['体以上撃破','たいいじょうげきは'],
   ['世界','せかい'],
   ['探検家','たんけんか'],
   ['王者','おうじゃ'],
@@ -390,7 +390,7 @@ const READING_PAIRS = [
 ];
 
 // 長い語から先に処理し、単語の一部だけに読みが付くのをできるだけ防ぎます。
-const READINGS = [...new Map(READING_PAIRS).entries()]
+const READINGS = [...new Map(READING_PAIRS.filter(Boolean)).entries()]
   .filter(([word, reading]) => /[\u3400-\u9fff]/.test(word) && word !== reading)
   .sort((a, b) => b[0].length - a[0].length);
 
