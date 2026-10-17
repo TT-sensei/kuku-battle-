@@ -79,7 +79,7 @@ function show(id){
 
 function renderHome(){
   const hero=CHARACTERS[state.selectedCharacter];
-  $('#home').style.backgroundImage=`linear-gradient(rgba(255,253,248,.55),rgba(255,253,248,.62)),url("${BACKGROUNDS.home}")`;
+  $('#home').style.backgroundImage=`linear-gradient(110deg,rgba(255,253,248,.72),rgba(255,253,248,.28)),url("${BACKGROUNDS.home}")`;
   $('#home').style.backgroundSize='cover';
   $('#home').style.backgroundPosition='center';
   $('#home-level').textContent=state.playerLevel;
@@ -87,6 +87,18 @@ function renderHome(){
   setImage($('#home-character'),hero.stand);
   const count=state.reviewQueue.length;
   $('#home-review').textContent=count?`特訓おすすめが ${count}問 あります`:'苦手な九九はまだありません';
+  const nextTitle=$('#home-next-title'), nextDetail=$('#home-next-detail'), nextButton=$('#home-continue');
+  if(count){
+    nextTitle.textContent='苦手な九九をへらそう！';
+    nextDetail.textContent='いま '+count+'問が特訓まち。仲間とゆっくりれんしゅうしよう。';
+    nextButton.innerHTML='特訓する <span aria-hidden="true">→</span>';
+    nextButton.dataset.target='training-menu';
+  }else{
+    nextTitle.textContent='つぎの冒険へ出発！';
+    nextDetail.textContent='段をえらんで、九九バトルにちょうせんしよう。';
+    nextButton.innerHTML='冒険する <span aria-hidden="true">→</span>';
+    nextButton.dataset.target='adventure';
+  }
 }
 
 function renderCharacters(partnerMode){
@@ -407,17 +419,38 @@ function finishTraining(){
 
 function renderMap(){
   const grid=$('#map-grid'); grid.innerHTML='';
+  let clearedCount=0, masterCount=0;
   FACTORS.forEach((factor)=>{
     const s=factorSummary(state,factor),p=state.stageProgress[factor];
-    const card=document.createElement('article'); card.className='map-card';
-    card.innerHTML=`<div class="map-card-head"><h3>${factor}の段</h3>${isMaster(state,factor)?'<span class="master-label">MASTER 👑</span>':''}</div><div class="map-modes"><span class="${p.up.cleared?'done':''}">のぼり ${p.up.cleared?'✓':'－'}</span><span class="${p.down.cleared?'done':''}">くだり ${p.down.cleared?'✓':'－'}</span><span class="${p.random.cleared?'done':''}">ランダム ${p.random.cleared?'✓':'－'}</span></div><div class="map-metrics"><span><b>${s.accuracy}%</b>正答率</span><span><b>${s.recentRate}%</b>最近</span><span><b>${s.weakCount}</b>苦手</span></div><div class="grade">${s.mark} ${s.label}</div>`;
+    const master=isMaster(state,factor);
+    const stageCleared=Boolean(p.up.cleared&&p.down.cleared&&p.random.cleared);
+    if(stageCleared) clearedCount++;
+    if(master) masterCount++;
+    const region=factor<=3?'草原エリア':factor<=6?'森エリア':'天空エリア';
+    const card=document.createElement('button');
+    card.type='button';
+    card.className='map-card map-stage-card'+(master?' master':'');
+    card.setAttribute('aria-label',factor+'の段。段をえらんで練習');
+    const badge=master?'<span class="master-label">MASTER ✦</span>':stageCleared?'<span class="stage-cleared">CLEAR ✓</span>':'<span class="map-go" aria-hidden="true">→</span>';
+    const gradeClass=s.mark==='◎'?'great':s.mark==='△'?'practice':'normal';
+    const accuracy=s.attempts?s.accuracy+'%':'—';
+    const recent=s.attempts?s.recentRate+'%':'—';
+    card.innerHTML='<span class="map-region">'+region+'</span>'+
+      '<span class="map-card-head"><span class="map-factor">'+factor+'<small>の段</small></span>'+badge+'</span>'+
+      '<span class="map-progress" aria-label="クリア状況"><i class="'+(p.up.cleared?'done':'')+'" title="のぼり"></i><i class="'+(p.down.cleared?'done':'')+'" title="くだり"></i><i class="'+(p.random.cleared?'done':'')+'" title="ランダム"></i></span>'+
+      '<span class="map-mode-labels"><span>のぼり</span><span>くだり</span><span>ランダム</span></span>'+
+      '<span class="map-card-bottom"><span class="grade grade-'+gradeClass+'">'+s.mark+' '+s.label+'</span><span class="map-weak-count">'+(s.weakCount?'苦手 '+s.weakCount:'')+'</span></span>'+
+      '<span class="map-card-stats"><span>正答率 <b>'+accuracy+'</b></span><span>最近 <b>'+recent+'</b></span></span>';
+    card.addEventListener('click',()=>{currentFactor=factor;$('#mode-factor').textContent=factor;show('stage-modes');});
     grid.append(card);
   });
+  $('#map-cleared-count').textContent=clearedCount+' / 9';
+  $('#map-master-count').textContent=masterCount+'段';
+  $('#map-weak-count').textContent=state.reviewQueue.length+'問';
   const keys=recommendedKeys(state,5),list=$('#recommend-list');
-  list.innerHTML=keys.length?keys.map((key)=>`<button data-train-key="${key}">${formatFormula(parseKey(key))}を特訓</button>`).join(''):'いまは特訓おすすめがありません。';
+  list.innerHTML=keys.length?keys.map((key)=>'<button class="recommend-equation" data-train-key="'+key+'"><span>'+formatFormula(parseKey(key))+'</span><small>もう一度れんしゅう</small><b aria-hidden="true">→</b></button>').join(''):'<div class="recommend-empty"><strong>いまは特訓まちの九九はないよ！</strong><span>気になる段をえらんで、ランダムれんしゅうにちょうせんしよう。</span></div>';
   $$('[data-train-key]',list).forEach((b)=>b.addEventListener('click',()=>startTraining('battle',null,[b.dataset.trainKey])));
 }
-
 function allMonsters(){ return [...NORMAL_MONSTERS,...Object.values(BOSS_CANDIDATES).flat()]; }
 const STICKER_EFFECTS=['holo','rainbow','glitter','neon','aurora','prism'];
 function stickerEffect(){return STICKER_EFFECTS[Math.floor(Math.random()*STICKER_EFFECTS.length)]}
@@ -438,7 +471,8 @@ function renderSettings(){
   $('#setting-kuku-words').checked=state.settings.showKukuWords !== false;
 }
 
-$$('[data-go]').forEach((button)=>button.addEventListener('click',()=>show(button.dataset.go)));
+$('#home-continue').addEventListener('click',()=>show($('#home-continue').dataset.target||'adventure'));
+$('[data-go]').forEach((button)=>button.addEventListener('click',()=>show(button.dataset.go)));
 $$('[data-mode]').forEach((button)=>button.addEventListener('click',()=>prepareBattle({kind:'normal',factor:currentFactor,mode:button.dataset.mode})));
 $$('[data-training]').forEach((button)=>button.addEventListener('click',()=>{
   const type=button.dataset.training;
