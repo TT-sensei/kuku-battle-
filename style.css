@@ -469,3 +469,182 @@
 @media(max-width:760px){
   .home-screen{background:linear-gradient(160deg,#e2f6ff 0%,#cceaff 45%,#fff5d8 100%)}
 }
+
+
+/* ADVENTURE MAP: bright illustrated journey board */
+#adventure{
+  --map-ink:#24455b;
+  --map-muted:#5b7887;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  color:var(--map-ink);
+  background:
+    radial-gradient(ellipse at 10% 8%,rgba(255,255,255,.98),transparent 35%),
+    radial-gradient(ellipse at 92% 18%,rgba(255,224,143,.48),transparent 27%),
+    linear-gradient(155deg,#e5f7ff 0%,#d8f2dc 50%,#fff1cb 100%);
+}
+#adventure::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  opacity:.42;
+  pointer-events:none;
+  background-image:radial-gradient(circle,#fff 0 2px,transparent 2.5px),radial-gradient(circle,rgba(84,157,120,.22) 0 2px,transparent 2.5px);
+  background-size:38px 38px,54px 54px;
+  background-position:0 0,18px 22px;
+}
+#adventure::after{content:"☁️";right:5%;top:5%;bottom:auto;color:transparent;font-size:clamp(2rem,5vw,4rem);opacity:.55;transform:none}
+#adventure .screen-head{margin-bottom:16px;align-items:center}
+#adventure .screen-head h2{color:#1d4c69;text-shadow:0 2px rgba(255,255,255,.8)}
+#adventure .screen-head .eyebrow{color:#b56b19}
+.adventure-route-note{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:0 0 18px;
+  padding:14px 18px;
+  border:1px solid rgba(255,255,255,.95);
+  border-radius:22px;
+  background:linear-gradient(110deg,rgba(255,255,255,.93),rgba(255,250,225,.94));
+  box-shadow:0 7px 0 rgba(83,145,118,.10),0 12px 24px rgba(40,93,119,.09);
+}
+.route-note-mark{
+  display:grid;
+  place-items:center;
+  flex:0 0 52px;
+  height:52px;
+  border-radius:17px;
+  background:linear-gradient(145deg,#ffdd7d,#ffb84e);
+  box-shadow:inset 0 -3px rgba(171,108,27,.14);
+  font-size:1.8rem;
+}
+.adventure-route-note>div:nth-child(2){display:grid;gap:3px;min-width:0}
+.adventure-route-note strong{font-size:clamp(1rem,2vw,1.25rem);color:#24526b}
+.adventure-route-note span{font-size:.82rem;line-height:1.45;color:#547182}
+.route-regions{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.route-regions span{padding:6px 9px;border-radius:999px;background:#edf8ee;color:#427b5c;font-size:.72rem;font-weight:850;white-space:nowrap}
+#stage-grid.stage-grid{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  padding:16px;
+  border:2px solid rgba(255,255,255,.92);
+  border-radius:28px;
+  background:rgba(255,255,255,.40);
+  box-shadow:inset 0 0 0 1px rgba(95,161,145,.12),0 12px 28px rgba(49,102,119,.08);
+}
+#stage-grid .stage-card.adventure-stage{
+  appearance:none;
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:space-between;
+  gap:10px;
+  min-width:0;
+  min-height:164px;
+  padding:13px 15px 12px;
+  overflow:hidden;
+  text-align:left;
+  color:#26495e;
+  border:2px solid rgba(255,255,255,.98);
+  border-radius:21px;
+  background:linear-gradient(150deg,#fff 0%,#effbf2 100%);
+  box-shadow:0 5px 0 rgba(57,122,99,.14),0 8px 17px rgba(40,91,117,.10);
+  cursor:pointer;
+  transition:transform .16s,box-shadow .16s,filter .16s;
+}
+#stage-grid .adventure-stage::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:6px;
+  z-index:-1;
+  background:#79c18b;
+}
+#stage-grid .stage-region-lake{background:linear-gradient(150deg,#fff 0%,#e8f7ff 100%)}
+#stage-grid .stage-region-lake::before{background:#68b8df}
+#stage-grid .stage-region-mountain{background:linear-gradient(150deg,#fff 0%,#f0ebff 100%)}
+#stage-grid .stage-region-mountain::before{background:#9c8ce3}
+#stage-grid .stage-region{font-size:.72rem;font-weight:850;color:#587786;line-height:1.2}
+#stage-grid .stage-number-wrap{display:flex;align-items:baseline;gap:5px;position:relative;min-height:48px}
+#stage-grid .stage-number-wrap>strong{display:inline!important;margin:0;color:#28664f;font-size:clamp(2.4rem,4vw,3.3rem);font-weight:1000;line-height:.95;letter-spacing:-.07em;text-shadow:0 2px #fff}
+#stage-grid .stage-region-lake .stage-number-wrap>strong{color:#2676a0}
+#stage-grid .stage-region-mountain .stage-number-wrap>strong{color:#6955ad}
+#stage-grid .stage-unit{font-size:.9rem;font-weight:850;color:#597586}
+#stage-grid .stage-island-icon{position:absolute;right:2px;top:-7px;font-size:2rem;filter:drop-shadow(0 3px 0 rgba(255,255,255,.85))}
+#stage-grid .stage-status{display:inline-flex;align-self:flex-start;align-items:center;max-width:100%;padding:5px 9px;border-radius:999px;font-size:.72rem;font-weight:900;line-height:1.2;background:#f2f7f8;color:#5e7783}
+#stage-grid .status-practice{background:#fff0df;color:#a64f25}
+#stage-grid .status-master{background:#fff0b9;color:#8b5c09}
+#stage-grid .stage-route-progress{display:flex;gap:5px;margin-top:auto}
+#stage-grid .stage-route-progress i{display:block;flex:1;height:5px;border-radius:99px;background:rgba(75,112,128,.17)}
+#stage-grid .stage-route-progress i.done{background:#57b17a;box-shadow:0 0 0 1px rgba(49,130,79,.08)}
+#stage-grid .stage-action{display:flex;align-items:center;justify-content:space-between;gap:6px;padding-top:8px;border-top:1px solid rgba(74,122,135,.14);font-size:.78rem;font-weight:900;color:#47775e}
+#stage-grid .stage-region-lake .stage-action{color:#2676a0}
+#stage-grid .stage-region-mountain .stage-action{color:#6955ad}
+#stage-grid .stage-action b{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:rgba(255,255,255,.86);font-size:1rem}
+#stage-grid .stage-card.master{border-color:#f1ce68;background:linear-gradient(150deg,#fffef2,#fff0bd);box-shadow:0 5px 0 rgba(185,134,27,.16),0 8px 17px rgba(40,91,117,.1)}
+#stage-grid .stage-card.master::before{background:#f2b83d}
+#stage-grid .stage-card:hover,#stage-grid .stage-card:focus-visible{transform:translateY(-3px);filter:saturate(1.05);box-shadow:0 7px 0 rgba(57,122,99,.12),0 14px 22px rgba(40,91,117,.16)}
+#adventure .section-title{display:flex;align-items:center;gap:10px;margin:26px 0 12px;color:#81452c;font-size:1.3rem}
+#adventure .section-title::before{content:"🐉";font-size:1.35rem}
+#adventure .boss-grid{gap:12px}
+#adventure .boss-card.adventure-boss{
+  position:relative;
+  grid-template-columns:84px minmax(0,1fr) 32px;
+  gap:12px;
+  min-height:108px;
+  padding:12px 15px;
+  overflow:hidden;
+  border:2px solid #f0c0ad;
+  border-radius:21px;
+  background:linear-gradient(115deg,#fff8f0,#ffe7e2 55%,#efeaff);
+  box-shadow:0 5px 0 rgba(163,83,66,.12),0 8px 17px rgba(66,80,115,.09);
+  transition:transform .16s,box-shadow .16s;
+}
+#adventure .boss-card.adventure-boss img{width:80px;height:80px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(65,52,72,.15))}
+#adventure .boss-copy{display:grid;gap:4px;min-width:0}
+#adventure .boss-eyebrow{font-size:.66rem;font-weight:900;letter-spacing:.06em;color:#b15d4a}
+#adventure .boss-card.adventure-boss strong{font-size:1rem;color:#733c42}
+#adventure .boss-card.adventure-boss small{margin:0;color:#765f69;font-size:.78rem}
+#adventure .boss-arrow{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#b45d4b;font-weight:950}
+#adventure .boss-card.adventure-boss.defeated{border-color:#e3c15e;background:linear-gradient(115deg,#fffbe7,#fff1c8)}
+#adventure .boss-card.adventure-boss.defeated .boss-eyebrow{color:#997016}
+#adventure .boss-card.adventure-boss.defeated .boss-arrow{color:#997016}
+#adventure .boss-card.adventure-boss:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(163,83,66,.10),0 13px 22px rgba(66,80,115,.14)}
+@media(max-width:760px){
+  #adventure{padding:16px}
+  .adventure-route-note{align-items:flex-start;padding:12px;gap:10px;flex-wrap:wrap}
+  .route-note-mark{flex-basis:44px;height:44px;font-size:1.55rem}
+  .adventure-route-note>div:nth-child(2){flex:1}
+  .route-regions{width:100%;justify-content:flex-start;margin-left:54px}
+  .route-regions span{font-size:.68rem}
+  #stage-grid.stage-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;padding:10px;border-radius:22px}
+  #stage-grid .stage-card.adventure-stage{min-height:150px;padding:10px 9px;gap:8px;border-radius:17px}
+  #stage-grid .stage-region{font-size:.61rem}
+  #stage-grid .stage-number-wrap>strong{font-size:2.35rem}
+  #stage-grid .stage-unit{font-size:.75rem}
+  #stage-grid .stage-island-icon{font-size:1.55rem;right:0}
+  #stage-grid .stage-status{font-size:.62rem;padding:5px 6px}
+  #stage-grid .stage-action{font-size:.68rem}
+  #adventure .boss-grid{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  .route-regions{margin-left:0}
+  #stage-grid.stage-grid{gap:7px;padding:7px}
+  #stage-grid .stage-card.adventure-stage{min-height:145px;padding:9px 7px}
+  #stage-grid .stage-number-wrap>strong{font-size:2.1rem}
+  #stage-grid .stage-island-icon{font-size:1.35rem}
+  #stage-grid .stage-status{font-size:.57rem;padding:4px 5px}
+  #stage-grid .stage-action{font-size:.62rem}
+  #adventure .boss-card.adventure-boss{grid-template-columns:64px minmax(0,1fr) 28px;padding:10px;gap:8px}
+  #adventure .boss-card.adventure-boss img{width:62px;height:62px}
+}
+@media(prefers-reduced-motion:reduce){
+  #stage-grid .stage-card.adventure-stage,#adventure .boss-card.adventure-boss{transition:none}
+  #stage-grid .stage-card.adventure-stage:hover,#adventure .boss-card.adventure-boss:hover{transform:none}
+}
