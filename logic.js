@@ -186,7 +186,7 @@ export function defaultState() {
     schemaVersion:SCHEMA_VERSION, selectedCharacter:'sora', trainingPartner:'kai', playerLevel:1, exp:0,
     supportMode:false, stageProgress, bossProgress:{mid1:{defeated:false},mid2:{defeated:false},final:{defeated:false}},
     multiplicationStats:{}, recentAttempts:[], reviewQueue:[], mastery, bestTimes:{normal:{},support:{}}, maxCombos:{},
-    monsterBook:{}, monsterDefeatCounts:{}, collections:[], settings:{muted:false,volume:0.24,showKukuWords:true},
+    monsterBook:{}, monsterDefeatCounts:{}, collections:[], earnedBadges:[], settings:{muted:false,volume:0.24,showKukuWords:true},
     adventureReward:{date:'',byFactor:{}},
     trainingExp:{date:'',earned:0}
   };
@@ -207,6 +207,7 @@ export function migrateState(saved) {
   merged.settings = { ...base.settings, ...(saved.settings || {}) };
   merged.adventureReward = { ...base.adventureReward, ...(saved.adventureReward || {}), byFactor:{ ...(saved.adventureReward?.byFactor || {}) } };
   merged.reviewQueue = [...new Set((saved.reviewQueue || []).filter((key) => /^\d+x\d+$/.test(key)))];
+  merged.earnedBadges = [...new Set((Array.isArray(saved.earnedBadges) ? saved.earnedBadges : []).filter((id) => typeof id === 'string'))];
   return merged;
 }
 
