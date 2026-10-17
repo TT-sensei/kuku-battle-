@@ -476,7 +476,7 @@ function renderSettings(){
 
 const homeContinue=$('#home-continue');
 if(homeContinue) homeContinue.addEventListener('click',()=>show(homeContinue.dataset.target||'adventure'));
-$('[data-go]').forEach((button)=>button.addEventListener('click',()=>show(button.dataset.go)));
+$$('[data-go]').forEach((button)=>button.addEventListener('click',()=>show(button.dataset.go)));
 $$('[data-mode]').forEach((button)=>button.addEventListener('click',()=>prepareBattle({kind:'normal',factor:currentFactor,mode:button.dataset.mode})));
 $$('[data-training]').forEach((button)=>button.addEventListener('click',()=>{
   const type=button.dataset.training;
