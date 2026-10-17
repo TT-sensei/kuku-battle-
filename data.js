@@ -155,6 +155,18 @@ export const MATH_BADGES=[
 
 // 学習の達成バッジは、実際の学習記録から条件達成を判定する。ランダム報酬にはしない。
 const BADGE_ASSETS='https://tt-sensei.github.io/edu-assets/assets/web/badges/common';
+const ACHIEVEMENT_BADGE_IMAGES={
+  'first-step':'first-step',comeback:'comeback',clear:'clear',perfect:'perfect',accuracy:'accuracy',combo:'combo',
+  'keep-going':'keep-going','hard-worker':'hard-worker','level-up':'level-up','review-master':'review-master',
+  breakthrough:'breakthrough','never-give-up':'never-give-up',mastery:'mastery',adventurer:'adventurer',
+  'steady-progress':'steady-progress',champion:'champion',explorer:'explorer','facts-9':'discovery',
+  'facts-54':'explorer','facts-81':'knowledge','all-correct':'great-answer','three-tables':'mastery',
+  'all-tables':'champion','perfect-three':'perfect','boss-repeat':'challenger','monster-10':'curiosity',
+  'monster-30':'explorer','collection-5':'treasure','collection-all':'treasure','retained-5':'review-master',
+  'retained-10':'breakthrough','accuracy-50':'accuracy','accuracy-100':'great-answer','combo-10':'combo',
+  'comeback-5':'comeback','mode-variety':'explorer','boss-all':'champion','long-journey':'hard-worker',
+  'first-retention':'review-master'
+};
 export const ACHIEVEMENT_BADGES=[
   ['first-step','はじめの一歩','九九に初めて取り組んだ','1問以上の回答記録'],
   ['comeback','立て直し名人','まちがえたあとに立て直した','まちがいのあとに正解した'],
@@ -195,7 +207,7 @@ export const ACHIEVEMENT_BADGES=[
   ['boss-all','ボス連戦の覇者','ボスとの戦いを重ねた','ボス撃破の合計が10回以上'],
   ['long-journey','冒険の積み重ね','200回回答に取り組んだ','回答記録200回以上'],
   ['first-retention','定着の二歩目','時間を空けた再確認を重ねた','間隔を空けた再確認で2問定着']
-].map(([id,name,description,criteria])=>({id,name,description,criteria,rarity:'common',image:BADGE_ASSETS+'/'+id+'/badge.webp'}));
+].map(([id,name,description,criteria])=>({id,name,description,criteria,rarity:'common',image:BADGE_ASSETS+'/'+ACHIEVEMENT_BADGE_IMAGES[id]+'/badge.webp'}));
 
 // コレクションはステージやボスの初クリア報酬。学びのバッジとは分けて表示する。
 export const ALL_COLLECTIONS=COLLECTIONS;
