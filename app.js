@@ -87,17 +87,20 @@ function renderHome(){
   setImage($('#home-character'),hero.stand);
   const count=state.reviewQueue.length;
   $('#home-review').textContent=count?`特訓おすすめが ${count}問 あります`:'苦手な九九はまだありません';
+  // HTMLとJSのキャッシュが一時的にずれても、起動画面を止めない
   const nextTitle=$('#home-next-title'), nextDetail=$('#home-next-detail'), nextButton=$('#home-continue');
-  if(count){
-    nextTitle.textContent='苦手な九九をへらそう！';
-    nextDetail.textContent='いま '+count+'問が特訓まち。仲間とゆっくりれんしゅうしよう。';
-    nextButton.innerHTML='特訓する <span aria-hidden="true">→</span>';
-    nextButton.dataset.target='training-menu';
-  }else{
-    nextTitle.textContent='つぎの冒険へ出発！';
-    nextDetail.textContent='段をえらんで、九九バトルにちょうせんしよう。';
-    nextButton.innerHTML='冒険する <span aria-hidden="true">→</span>';
-    nextButton.dataset.target='adventure';
+  if(nextTitle && nextDetail && nextButton){
+    if(count){
+      nextTitle.textContent='苦手な九九をへらそう！';
+      nextDetail.textContent='いま '+count+'問が特訓まち。仲間とゆっくりれんしゅうしよう。';
+      nextButton.innerHTML='特訓する <span aria-hidden="true">→</span>';
+      nextButton.dataset.target='training-menu';
+    }else{
+      nextTitle.textContent='つぎの冒険へ出発！';
+      nextDetail.textContent='段をえらんで、九九バトルにちょうせんしよう。';
+      nextButton.innerHTML='冒険する <span aria-hidden="true">→</span>';
+      nextButton.dataset.target='adventure';
+    }
   }
 }
 
@@ -471,7 +474,8 @@ function renderSettings(){
   $('#setting-kuku-words').checked=state.settings.showKukuWords !== false;
 }
 
-$('#home-continue').addEventListener('click',()=>show($('#home-continue').dataset.target||'adventure'));
+const homeContinue=$('#home-continue');
+if(homeContinue) homeContinue.addEventListener('click',()=>show(homeContinue.dataset.target||'adventure'));
 $('[data-go]').forEach((button)=>button.addEventListener('click',()=>show(button.dataset.go)));
 $$('[data-mode]').forEach((button)=>button.addEventListener('click',()=>prepareBattle({kind:'normal',factor:currentFactor,mode:button.dataset.mode})));
 $$('[data-training]').forEach((button)=>button.addEventListener('click',()=>{
