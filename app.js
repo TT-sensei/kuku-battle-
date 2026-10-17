@@ -667,9 +667,9 @@ function renderSettings(){
   $('#setting-kuku-words').checked=state.settings.showKukuWords !== false;
 }
 
-$('[data-badge-filter]').forEach((button)=>button.addEventListener('click',()=>{
+$$('[data-badge-filter]').forEach((button)=>button.addEventListener('click',()=>{
   badgeFilter=button.dataset.badgeFilter;
-  $('[data-badge-filter]').forEach((item)=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button));});
+  $$('[data-badge-filter]').forEach((item)=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button));});
   renderCollection();
 }));
 
