@@ -4,7 +4,7 @@ import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAn
 
 assert.equal(ACHIEVEMENT_BADGES.length,39);
 assert.equal(MATH_BADGES.length,25);
-assert.equal(new Set([...ACHIEVEMENT_BADGES,...MATH_BADGES].map((badge)=>badge.id)).size,65);
+assert.equal(new Set([...ACHIEVEMENT_BADGES,...MATH_BADGES].map((badge)=>badge.id)).size,64);
 assert.equal(MATH_BADGES.filter((badge)=>badge.criteria!=='このアプリでは獲得判定しない').length,9);
 assert.ok(ACHIEVEMENT_BADGES.some((badge)=>badge.id==='facts-81'));
 assert.ok(ACHIEVEMENT_BADGES.some((badge)=>badge.id==='retained-10'));
