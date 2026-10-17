@@ -126,7 +126,7 @@ export const MATH_BADGES=[
 const BADGE_ASSETS='https://tt-sensei.github.io/edu-assets/assets/web/badges/common';
 export const ACHIEVEMENT_BADGES=[
   ['first-step','はじめの一歩','九九に初めて取り組んだ','1問以上の回答記録'],
-  ['challenger','チャレンジャー','段やボスに挑戦した','段を1モード以上クリア、またはボスを撃破'],
+  ['comeback','立て直し名人','まちがえたあとに立て直した','まちがいのあとに正解した'],
   ['clear','クリア','最初のステージクリア','段を1モード以上クリア'],
   ['perfect','パーフェクト','ミスなしでクリア','段をミスなしでクリア'],
   ['accuracy','正確無比','正確さが身についてきた','20回以上回答し、正答率90%以上'],
