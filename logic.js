@@ -66,6 +66,7 @@ export function recordAttempt(state, q, isCorrect, now = new Date().toISOString(
     stat.reviewActive = true;
     stat.reviewCorrectStreak = 0;
     stat.reviewLastCorrectAt = null;
+    stat.retentionConfirmedAt = null;
     if (!state.reviewQueue.includes(q.key)) state.reviewQueue.push(q.key);
   } else if (stat.reviewActive) {
     // 古い保存データには reviewLastCorrectAt がないため、最初の正解を基準点にする。
@@ -97,6 +98,7 @@ export function recordAttempt(state, q, isCorrect, now = new Date().toISOString(
           if (stat.reviewCorrectStreak >= 2) {
             stat.reviewActive = false;
             stat.reviewLastCorrectAt = null;
+            stat.retentionConfirmedAt = now;
             state.reviewQueue = state.reviewQueue.filter((key) => key !== q.key);
           }
         }
@@ -137,8 +139,13 @@ export function factorSummary(state, factor) {
 
 export function recommendedKeys(state, limit = 5) {
   return Object.entries(state.multiplicationStats)
-    .filter(([,s]) => s.reviewActive)
-    .sort(([,a],[,b]) => Number(b.reviewActive)-Number(a.reviewActive) || b.wrong-a.wrong || new Date(b.lastWrongAt||0)-new Date(a.lastWrongAt||0))
+    .filter(([,s]) => s.reviewActive || ((s.recentResults || []).length >= 3 && recentRate(s) < 70))
+    .sort(([,a],[,b]) =>
+      Number(Boolean(b.reviewActive))-Number(Boolean(a.reviewActive)) ||
+      recentRate(a)-recentRate(b) ||
+      b.wrong-a.wrong ||
+      new Date(b.lastWrongAt||b.lastAskedAt||0)-new Date(a.lastWrongAt||a.lastAskedAt||0)
+    )
     .slice(0, limit).map(([key]) => key);
 }
 

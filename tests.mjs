@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster, trainingSeed } from './logic.js';
+import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster, trainingSeed, recommendedKeys } from './logic.js';
 
 assert.deepEqual(stageQuestions(7,'up').map(q=>q.factorB), [1,2,3,4,5,6,7,8,9]);
 assert.deepEqual(stageQuestions(7,'down').map(q=>q.factorB), [9,8,7,6,5,4,3,2,1]);
@@ -39,7 +39,16 @@ recordAttempt(state,question(3,3),true,'2026-01-01T00:01:20Z');
 recordAttempt(state,question(4,4),true,'2026-01-01T00:01:30Z');
 recordAttempt(state,q,true,'2026-01-01T00:02:00Z');
 assert.equal(state.multiplicationStats['6x7'].reviewActive,false);
+assert.equal(state.multiplicationStats['6x7'].retentionConfirmedAt,'2026-01-01T00:02:00Z');
 assert.deepEqual(state.reviewQueue,[]);
+const retentionRetry = JSON.parse(JSON.stringify(state));
+recordAttempt(retentionRetry,q,false,'2026-01-01T00:03:00Z');
+assert.equal(retentionRetry.multiplicationStats['6x7'].retentionConfirmedAt,null);
+assert.equal(retentionRetry.multiplicationStats['6x7'].reviewActive,true);
+
+const recommendationState=defaultState();
+recommendationState.multiplicationStats['2x3']={attempts:4,correct:2,wrong:2,recentResults:[false,false,true],reviewActive:false,lastWrongAt:'2026-01-01T00:00:00Z'};
+assert.ok(recommendedKeys(recommendationState,5).includes('2x3'));
 
 const focusedSeed = trainingSeed(defaultState(),'battle',null,['6x7'],()=>0.25);
 assert.equal(focusedSeed.length,10);

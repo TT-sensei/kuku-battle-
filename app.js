@@ -85,8 +85,8 @@ function renderHome(){
   $('#home-level').textContent=state.playerLevel;
   $('#home-role').textContent=hero.role;
   setImage($('#home-character'),hero.stand);
-  const count=state.reviewQueue.length;
-  $('#home-review').textContent=count?`特訓おすすめが ${count}問 あります`:'苦手な九九はまだありません';
+  const count=recommendedKeys(state,9).length;
+  $('#home-review').textContent=count?`特訓おすすめが ${count}問 あります`:'今はおすすめの特訓はないよ';
   // HTMLとJSのキャッシュが一時的にずれても、起動画面を止めない
   const nextTitle=$('#home-next-title'), nextDetail=$('#home-next-detail'), nextButton=$('#home-continue');
   if(nextTitle && nextDetail && nextButton){
@@ -449,7 +449,9 @@ function renderMap(){
   });
   $('#map-cleared-count').textContent=clearedCount+' / 9';
   $('#map-master-count').textContent=masterCount+'段';
-  $('#map-weak-count').textContent=state.reviewQueue.length+'問';
+  $('#map-weak-count').textContent=recommendedKeys(state,81).length+'問';
+  const retainedCount=Object.values(state.multiplicationStats).filter((stat)=>Boolean(stat.retentionConfirmedAt) && !stat.reviewActive).length;
+  $('#map-retained-count').textContent=retainedCount+' / 81';
   const keys=recommendedKeys(state,5),list=$('#recommend-list');
   list.innerHTML=keys.length?keys.map((key)=>'<button class="recommend-equation" data-train-key="'+key+'"><span>'+formatFormula(parseKey(key))+'</span><small>もう一度れんしゅう</small><b aria-hidden="true">→</b></button>').join(''):'<div class="recommend-empty"><strong>いまは特訓まちの九九はないよ！</strong><span>気になる段をえらんで、ランダムれんしゅうにちょうせんしよう。</span></div>';
   $$('[data-train-key]',list).forEach((b)=>b.addEventListener('click',()=>startTraining('battle',null,[b.dataset.trainKey])));

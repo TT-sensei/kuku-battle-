@@ -62,7 +62,7 @@
 .home-footer-card span{font-size:.78rem;line-height:1.4}
 .home-footer-card .text-button{font-size:.8rem;white-space:nowrap}
 .map-screen{background:linear-gradient(150deg,rgba(255,253,248,.97),rgba(239,246,247,.96))}
-.map-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:-6px 0 12px}
+.map-overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:-6px 0 12px}
 .map-overview>div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 4px 12px rgba(23,50,77,.04)}
 .map-overview span{font-size:.84rem;color:var(--muted);font-weight:700}
 .map-overview strong{font-size:clamp(1.05rem,2vw,1.45rem);color:var(--deep);white-space:nowrap}
@@ -159,3 +159,6 @@
 .map-stage-card .grade{margin:0;padding:0;background:transparent;border-radius:0}
 #recommend-list .recommend-equation{margin:0}
 .map-stage-card .map-card-head{margin:0}
+
+/* 学習状況の4項目は、狭い画面では2列で読みやすく表示 */
+@media(max-width:760px){.map-overview{grid-template-columns:repeat(2,minmax(0,1fr))}}
