@@ -147,6 +147,13 @@
       <p class="map-instruction">段をえらぶと、のぼり・くだり・ランダムにちょうせんできるよ。</p>
       <div id="map-grid" class="map-grid"></div>
       <section class="recommend-card map-recommend"><div class="recommend-heading"><div><p class="eyebrow">NEXT PRACTICE</p><h3>いまのおすすめ</h3></div><span class="recommend-icon" aria-hidden="true">✦</span></div><p class="recommend-copy">苦手な九九や、最近まちがえやすい九九を選んだよ。</p><div id="recommend-list"></div></section>
+      <section class="fact-check-card" aria-labelledby="fact-check-title">
+        <div class="fact-check-heading"><div><p class="eyebrow">ALL 81 FACTS</p><h3 id="fact-check-title">九九を1問ずつチェック</h3></div><p>気になるマスをタップすると、その九九を練習できるよ。</p></div>
+        <div class="fact-legend" aria-label="マスの見方">
+          <span><i class="legend-dot needs-review"></i>特訓</span><span><i class="legend-dot retained"></i>定着確認</span><span><i class="legend-dot recorded"></i>記録あり</span><span><i class="legend-dot unseen"></i>未挑戦</span>
+        </div>
+        <div class="fact-board-scroll"><div id="fact-board" class="fact-board" role="group" aria-label="九九81問一覧"></div></div>
+      </section>
     </section>
 
     <section id="book" class="screen panel-screen" hidden>
