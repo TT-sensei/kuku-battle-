@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { ACHIEVEMENT_BADGES, MATH_BADGES } from './data.js';
 import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster, trainingSeed, recommendedKeys, questionStatus } from './logic.js';
 
-assert.equal(ACHIEVEMENT_BADGES.length,40);
+assert.equal(ACHIEVEMENT_BADGES.length,39);
 assert.equal(MATH_BADGES.length,25);
 assert.equal(new Set([...ACHIEVEMENT_BADGES,...MATH_BADGES].map((badge)=>badge.id)).size,65);
 assert.equal(MATH_BADGES.filter((badge)=>badge.criteria!=='このアプリでは獲得判定しない').length,9);
