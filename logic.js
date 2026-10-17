@@ -60,6 +60,7 @@ export function recordAttempt(state, q, isCorrect, now = new Date().toISOString(
   stat.recentResults = [...stat.recentResults, Boolean(isCorrect)].slice(-10);
   stat.lastAskedAt = now;
   const previousAttempts = state.recentAttempts || [];
+  const needsSpacedReview = stat.reviewActive || (stat.recentResults.length >= 3 && recentRate(stat) < 70);
 
   if (!isCorrect) {
     stat.lastWrongAt = now;
@@ -68,38 +69,45 @@ export function recordAttempt(state, q, isCorrect, now = new Date().toISOString(
     stat.reviewLastCorrectAt = null;
     stat.retentionConfirmedAt = null;
     if (!state.reviewQueue.includes(q.key)) state.reviewQueue.push(q.key);
-  } else if (stat.reviewActive) {
-    // 古い保存データには reviewLastCorrectAt がないため、最初の正解を基準点にする。
-    if (!stat.reviewLastCorrectAt || !stat.reviewCorrectStreak) {
-      stat.reviewCorrectStreak = 1;
-      stat.reviewLastCorrectAt = now;
-    } else {
-      let baselineIndex = -1;
-      for (let i = previousAttempts.length - 1; i >= 0; i -= 1) {
-        const item = previousAttempts[i];
-        if (item.key === q.key && item.correct && item.at === stat.reviewLastCorrectAt) {
-          baselineIndex = i;
-          break;
-        }
-      }
-      if (baselineIndex < 0) {
+  } else {
+    // 正答率が低い問題は、今回正解できても間隔を空けた再確認の対象にする。
+    if (!stat.reviewActive && needsSpacedReview) {
+      stat.reviewActive = true;
+      if (!state.reviewQueue.includes(q.key)) state.reviewQueue.push(q.key);
+    }
+    if (stat.reviewActive) {
+      // 古い保存データには reviewLastCorrectAt がないため、最初の正解を基準点にする。
+      if (!stat.reviewLastCorrectAt || !stat.reviewCorrectStreak) {
         stat.reviewCorrectStreak = 1;
         stat.reviewLastCorrectAt = now;
       } else {
-        const interveningKeys = new Set(
-          previousAttempts.slice(baselineIndex + 1)
-            .filter((item) => item.key !== q.key)
-            .map((item) => item.key)
-        );
-        // 別の九九を3種類解いた後の正解だけを、間隔を空けた正解として数える。
-        if (interveningKeys.size >= 3) {
-          stat.reviewCorrectStreak += 1;
+        let baselineIndex = -1;
+        for (let i = previousAttempts.length - 1; i >= 0; i -= 1) {
+          const item = previousAttempts[i];
+          if (item.key === q.key && item.correct && item.at === stat.reviewLastCorrectAt) {
+            baselineIndex = i;
+            break;
+          }
+        }
+        if (baselineIndex < 0) {
+          stat.reviewCorrectStreak = 1;
           stat.reviewLastCorrectAt = now;
-          if (stat.reviewCorrectStreak >= 2) {
-            stat.reviewActive = false;
-            stat.reviewLastCorrectAt = null;
-            stat.retentionConfirmedAt = now;
-            state.reviewQueue = state.reviewQueue.filter((key) => key !== q.key);
+        } else {
+          const interveningKeys = new Set(
+            previousAttempts.slice(baselineIndex + 1)
+              .filter((item) => item.key !== q.key)
+              .map((item) => item.key)
+          );
+          // 別の九九を3種類解いた後の正解だけを、間隔を空けた正解として数える。
+          if (interveningKeys.size >= 3) {
+            stat.reviewCorrectStreak += 1;
+            stat.reviewLastCorrectAt = now;
+            if (stat.reviewCorrectStreak >= 2) {
+              stat.reviewActive = false;
+              stat.reviewLastCorrectAt = null;
+              stat.retentionConfirmedAt = now;
+              state.reviewQueue = state.reviewQueue.filter((key) => key !== q.key);
+            }
           }
         }
       }
@@ -110,7 +118,6 @@ export function recordAttempt(state, q, isCorrect, now = new Date().toISOString(
   state.recentAttempts = [...previousAttempts, { key:q.key, correct:Boolean(isCorrect), at:now }].slice(-200);
   return stat;
 }
-
 export function parseKey(key) {
   const [a,b] = String(key).split('x').map(Number);
   return question(a,b);
@@ -217,11 +224,13 @@ export function trainingSeed(state, type, factor = null, preferredKeys = [], ran
   if (type === 'stage') {
     pool = FACTORS.map((b) => question(factor,b));
   } else {
-    const keys = preferredKeys.length ? preferredKeys : state.reviewQueue;
+    const keys = preferredKeys.length
+      ? preferredKeys
+      : type === 'auto' ? recommendedKeys(state, 81) : state.reviewQueue;
     pool = keys
       .filter((key) => /^[1-9]x[1-9]$/.test(String(key)))
       .map(parseKey);
-    if (type === 'auto') pool.push(...recommendedKeys(state, 9).map(parseKey));
+    if (type === 'auto' && preferredKeys.length) pool.push(...recommendedKeys(state, 81).map(parseKey));
   }
 
   // 最初の10問では同じ九九を重ねず、苦手な問題の間に別の九九を挟む。
@@ -229,7 +238,7 @@ export function trainingSeed(state, type, factor = null, preferredKeys = [], ran
   const allQuestions = FACTORS.flatMap((a) => FACTORS.map((b) => question(a,b)));
   const focusKeys = new Set(focus.map((q) => q.key));
   const mixed = allQuestions.filter((q) => !focusKeys.has(q.key));
-  const uniqueFocus = shuffle(focus,random).slice(0,10);
+  const uniqueFocus = (focus.length > 10 ? focus : shuffle(focus,random)).slice(0,10);
   const fillers = shuffle(mixed,random).slice(0,Math.max(0,10-uniqueFocus.length));
   const seed = shuffle([...uniqueFocus,...fillers],random);
 

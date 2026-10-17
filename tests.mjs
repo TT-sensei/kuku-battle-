@@ -49,6 +49,9 @@ assert.equal(retentionRetry.multiplicationStats['6x7'].reviewActive,true);
 const recommendationState=defaultState();
 recommendationState.multiplicationStats['2x3']={attempts:4,correct:2,wrong:2,recentResults:[false,false,true],reviewActive:false,lastWrongAt:'2026-01-01T00:00:00Z'};
 assert.ok(recommendedKeys(recommendationState,5).includes('2x3'));
+recordAttempt(recommendationState,question(2,3),true,'2026-01-02T00:00:00Z');
+assert.equal(recommendationState.multiplicationStats['2x3'].reviewActive,true);
+assert.ok(recommendationState.reviewQueue.includes('2x3'));
 
 const focusedSeed = trainingSeed(defaultState(),'battle',null,['6x7'],()=>0.25);
 assert.equal(focusedSeed.length,10);
