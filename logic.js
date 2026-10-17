@@ -49,7 +49,7 @@ export function comboAnimation(combo) {
 }
 
 export function emptyStat() {
-  return { attempts:0, correct:0, wrong:0, recentResults:[], lastAskedAt:null, lastWrongAt:null, reviewActive:false, reviewCorrectStreak:0 };
+  return { attempts:0, correct:0, wrong:0, recentResults:[], lastAskedAt:null, lastWrongAt:null, reviewActive:false, reviewCorrectStreak:0, reviewLastCorrectAt:null };
 }
 
 export function recordAttempt(state, q, isCorrect, now = new Date().toISOString()) {
@@ -59,20 +59,53 @@ export function recordAttempt(state, q, isCorrect, now = new Date().toISOString(
   stat.wrong += isCorrect ? 0 : 1;
   stat.recentResults = [...stat.recentResults, Boolean(isCorrect)].slice(-10);
   stat.lastAskedAt = now;
+  const previousAttempts = state.recentAttempts || [];
+
   if (!isCorrect) {
     stat.lastWrongAt = now;
     stat.reviewActive = true;
     stat.reviewCorrectStreak = 0;
+    stat.reviewLastCorrectAt = null;
     if (!state.reviewQueue.includes(q.key)) state.reviewQueue.push(q.key);
   } else if (stat.reviewActive) {
-    stat.reviewCorrectStreak += 1;
-    if (stat.reviewCorrectStreak >= 2) {
-      stat.reviewActive = false;
-      state.reviewQueue = state.reviewQueue.filter((key) => key !== q.key);
+    // 古い保存データには reviewLastCorrectAt がないため、最初の正解を基準点にする。
+    if (!stat.reviewLastCorrectAt || !stat.reviewCorrectStreak) {
+      stat.reviewCorrectStreak = 1;
+      stat.reviewLastCorrectAt = now;
+    } else {
+      let baselineIndex = -1;
+      for (let i = previousAttempts.length - 1; i >= 0; i -= 1) {
+        const item = previousAttempts[i];
+        if (item.key === q.key && item.correct && item.at === stat.reviewLastCorrectAt) {
+          baselineIndex = i;
+          break;
+        }
+      }
+      if (baselineIndex < 0) {
+        stat.reviewCorrectStreak = 1;
+        stat.reviewLastCorrectAt = now;
+      } else {
+        const interveningKeys = new Set(
+          previousAttempts.slice(baselineIndex + 1)
+            .filter((item) => item.key !== q.key)
+            .map((item) => item.key)
+        );
+        // 別の九九を3種類解いた後の正解だけを、間隔を空けた正解として数える。
+        if (interveningKeys.size >= 3) {
+          stat.reviewCorrectStreak += 1;
+          stat.reviewLastCorrectAt = now;
+          if (stat.reviewCorrectStreak >= 2) {
+            stat.reviewActive = false;
+            stat.reviewLastCorrectAt = null;
+            state.reviewQueue = state.reviewQueue.filter((key) => key !== q.key);
+          }
+        }
+      }
     }
   }
+
   state.multiplicationStats[q.key] = stat;
-  state.recentAttempts = [...(state.recentAttempts || []), { key:q.key, correct:Boolean(isCorrect), at:now }].slice(-200);
+  state.recentAttempts = [...previousAttempts, { key:q.key, correct:Boolean(isCorrect), at:now }].slice(-200);
   return stat;
 }
 
@@ -174,29 +207,60 @@ export function addExp(state, amount) {
 
 export function trainingSeed(state, type, factor = null, preferredKeys = [], random = Math.random) {
   let pool = [];
-  if (type === 'stage') pool = FACTORS.map((b) => question(factor,b));
-  else {
+  if (type === 'stage') {
+    pool = FACTORS.map((b) => question(factor,b));
+  } else {
     const keys = preferredKeys.length ? preferredKeys : state.reviewQueue;
-    pool = keys.map(parseKey);
+    pool = keys
+      .filter((key) => /^[1-9]x[1-9]$/.test(String(key)))
+      .map(parseKey);
     if (type === 'auto') pool.push(...recommendedKeys(state, 9).map(parseKey));
   }
-  if (!pool.length) pool = bossQuestions(1,9,random);
-  const bag = shuffle([...new Map(pool.map((q) => [q.key,q])).values()], random);
-  const result = [];
-  while (result.length < 10) result.push(...shuffle(bag,random));
-  return result.slice(0,10);
+
+  // 最初の10問では同じ九九を重ねず、苦手な問題の間に別の九九を挟む。
+  const focus = [...new Map(pool.map((q) => [q.key,q])).values()];
+  const allQuestions = FACTORS.flatMap((a) => FACTORS.map((b) => question(a,b)));
+  const focusKeys = new Set(focus.map((q) => q.key));
+  const mixed = allQuestions.filter((q) => !focusKeys.has(q.key));
+  const uniqueFocus = shuffle(focus,random).slice(0,10);
+  const fillers = shuffle(mixed,random).slice(0,Math.max(0,10-uniqueFocus.length));
+  const seed = shuffle([...uniqueFocus,...fillers],random);
+
+  // 記録がない場合も、重複のない10問で練習を始められる。
+  if (seed.length < 10) {
+    const used = new Set(seed.map((q) => q.key));
+    seed.push(...shuffle(allQuestions.filter((q) => !used.has(q.key)),random).slice(0,10-seed.length));
+  }
+  return seed.slice(0,10);
 }
 
 export class TrainingScheduler {
-  constructor(seed, limit = 10) { this.queue = [...seed].slice(0,limit); this.limit=limit; this.index=0; }
+  constructor(seed, limit = 10) {
+    this.queue = [...seed].slice(0,limit);
+    this.seed = [...this.queue];
+    this.index = 0;
+    this.reviewInsertions = 0;
+    this.maxReviewInsertions = 10;
+    this.fillerCursor = 0;
+  }
   current() { return this.queue[this.index] || null; }
+  remaining() { return Math.max(0,this.queue.length-this.index); }
   advance(needsReview = false) {
     const current = this.current();
     this.index += 1;
-    if (needsReview && current && this.index < this.limit) {
-      const insertAt = Math.min(this.index + 3, this.limit - 1);
-      this.queue.splice(insertAt, 0, current);
-      this.queue = this.queue.slice(0,this.limit);
+    if (needsReview && current && this.reviewInsertions < this.maxReviewInsertions) {
+      const insertAt = this.index + 3;
+      // 終盤の誤答でも、別の問題を3問はさんで再挑戦できるようにする。
+      while (this.queue.length < insertAt) {
+        let filler = this.seed[this.fillerCursor % this.seed.length];
+        this.fillerCursor += 1;
+        if (!filler || filler.key === current.key) {
+          filler = this.seed.find((item) => item.key !== current.key) || current;
+        }
+        this.queue.push(filler);
+      }
+      this.queue.splice(insertAt,0,current);
+      this.reviewInsertions += 1;
     }
     return this.current();
   }

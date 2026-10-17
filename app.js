@@ -383,7 +383,7 @@ function renderTrainingQuestion(){
   renderQuestion('training',q);
   $('#training-answer').value=''; $('#training-feedback').textContent='';
   $('#training-answer').focus({preventScroll:true});
-  $('#training-remaining').textContent=10-training.scheduler.index;
+  $('#training-remaining').textContent=training.scheduler.remaining();
 }
 
 function submitTrainingAnswer(raw){
@@ -408,7 +408,7 @@ function trainingExpAward(correct){
 function finishTraining(){
   const result=training.score.getResult(); const overcome=[...training.beforeQueue].filter((key)=>!state.reviewQueue.includes(key));
   const exp=trainingExpAward(result.correct); save();
-  $('#result-mark').textContent='📖'; $('#result-kicker').textContent='特訓終了'; $('#result-title').textContent='10問おつかれさま！';
+  $('#result-mark').textContent='📖'; $('#result-kicker').textContent='特訓終了'; $('#result-title').textContent='特訓おつかれさま！';
   $('#result-message').textContent=overcome.length?`苦手を ${overcome.length}つ 克服！ 九九マップにも反映しました。`:'練習した記録が九九マップに反映されました。';
   $('#result-stats').innerHTML=statChip('正解',result.correct)+statChip('もう一度',result.wrong)+statChip('克服',overcome.length)+statChip('EXP',`+${exp}`);
   $('#result-reward').hidden=true; $('#result-weak').hidden=!state.reviewQueue.length;

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster } from './logic.js';
+import { defaultState, stageQuestions, getStageRewardExp, bossQuestions, comboAnimation, question, recordAttempt, TrainingScheduler, migrateState, isBossUnlocked, isMaster, trainingSeed } from './logic.js';
 
 assert.deepEqual(stageQuestions(7,'up').map(q=>q.factorB), [1,2,3,4,5,6,7,8,9]);
 assert.deepEqual(stageQuestions(7,'down').map(q=>q.factorB), [9,8,7,6,5,4,3,2,1]);
@@ -31,9 +31,33 @@ scheduler.advance(); scheduler.advance(); scheduler.advance();
 assert.equal(scheduler.current().key,'6x7');
 recordAttempt(state,q,true,'2026-01-01T00:01:00Z');
 assert.equal(state.multiplicationStats['6x7'].reviewActive,true);
+// 同じ九九をすぐ続けて正解しても、克服にはしない。
+recordAttempt(state,q,true,'2026-01-01T00:01:05Z');
+assert.equal(state.multiplicationStats['6x7'].reviewActive,true);
+recordAttempt(state,question(2,2),true,'2026-01-01T00:01:10Z');
+recordAttempt(state,question(3,3),true,'2026-01-01T00:01:20Z');
+recordAttempt(state,question(4,4),true,'2026-01-01T00:01:30Z');
 recordAttempt(state,q,true,'2026-01-01T00:02:00Z');
 assert.equal(state.multiplicationStats['6x7'].reviewActive,false);
 assert.deepEqual(state.reviewQueue,[]);
+
+const focusedSeed = trainingSeed(defaultState(),'battle',null,['6x7'],()=>0.25);
+assert.equal(focusedSeed.length,10);
+assert.equal(new Set(focusedSeed.map((item)=>item.key)).size,10);
+assert.equal(focusedSeed.filter((item)=>item.key==='6x7').length,1);
+const spacedScheduler = new TrainingScheduler(focusedSeed);
+const first = spacedScheduler.current();
+spacedScheduler.advance(true);
+assert.notEqual(spacedScheduler.current().key,first.key);
+spacedScheduler.advance(); spacedScheduler.advance(); spacedScheduler.advance();
+assert.equal(spacedScheduler.current().key,first.key);
+// 終盤に間違えても、3問はさんだ再挑戦をキューに入れる。
+const lateScheduler = new TrainingScheduler(focusedSeed);
+for (let i=0;i<8;i+=1) lateScheduler.advance();
+const lateQuestion = lateScheduler.current();
+lateScheduler.advance(true);
+lateScheduler.advance(); lateScheduler.advance(); lateScheduler.advance();
+assert.equal(lateScheduler.current().key,lateQuestion.key);
 
 const restored=migrateState(JSON.parse(JSON.stringify({...state,playerLevel:12,collections:['dragon']})));
 assert.equal(restored.playerLevel,12);
