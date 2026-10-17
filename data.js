@@ -192,7 +192,7 @@ export const ACHIEVEMENT_BADGES=[
   ['combo-10','コンボの達人','10コンボを達成','最大10コンボ以上'],
   ['comeback-5','リカバリーの達人','まちがいのあとに5回立て直した','誤答後の正解が5回以上'],
   ['mode-variety','練習スタイルの探究者','いろいろな段・モードに挑戦','9段それぞれで1モード以上クリア'],
-  ['boss-all','ボス完全制覇','3種類のボスをすべて撃破','中ボス2体と大ボスを撃破'],
+  ['boss-all','ボス連戦の覇者','ボスとの戦いを重ねた','ボス撃破の合計が10回以上'],
   ['long-journey','冒険の積み重ね','200回回答に取り組んだ','回答記録200回以上'],
   ['first-retention','定着の第一歩','時間を空けて覚えたことを確認','間隔を空けた再確認で1問定着']
 ].map(([id,name,description,criteria])=>({id,name,description,criteria,rarity:'common',image:BADGE_ASSETS+'/'+id+'/badge.webp'}));
