@@ -165,11 +165,9 @@ export function questionStatus(state, key) {
   return 'unseen';
 }
 
-export function isBossUnlocked(state, bossId) {
-  if (bossId === 'mid1') return [2,3,4,5].every((f) => state.stageProgress[f]?.random?.cleared);
-  if (bossId === 'mid2') return [6,7,8,9].every((f) => state.stageProgress[f]?.random?.cleared);
-  if (bossId === 'final') return Boolean(state.bossProgress.mid1?.defeated && state.bossProgress.mid2?.defeated);
-  return false;
+export function isBossUnlocked(_state, bossId) {
+  // 学習の進め方は一人ひとり違うため、ボスは最初から自由に選べる。
+  return ['mid1','mid2','final'].includes(bossId);
 }
 
 export function isMaster(state, factor) {
