@@ -1,6 +1,6 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
-import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, ALL_COLLECTIONS, ENCOURAGEMENT } from './data.js';
+import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, COLLECTIONS, ALL_COLLECTIONS, ACHIEVEMENT_BADGES, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, questionStatus, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -156,8 +156,7 @@ function renderAdventure(){
   });
   const bosses=$('#boss-grid'); bosses.innerHTML='';
   Object.entries(BOSS_CONFIG).forEach(([id,config])=>{
-    const unlocked=true;
-    const hint=id==='mid1'?'2〜5の段のランダムをクリア':id==='mid2'?'6〜9の段のランダムをクリア':'中ボス2体を撃破';
+    const unlocked=isBossUnlocked(state,id);
     const button=document.createElement('button');
     button.className=`boss-card adventure-boss${state.bossProgress[id].defeated?' defeated':''}${unlocked?'':' locked'}`;
     button.innerHTML=`<img src="${config.monster.image}" alt=""><span class="boss-copy"><span class="boss-eyebrow">${id==='final'?'最終エリア':'ボスチャレンジ'}</span><strong>${config.title}</strong><small>${state.bossProgress[id].defeated?'🏆 撃破済み・何度でも挑戦OK':'⚔️ 挑戦できるよ！'}</small></span><span class="boss-arrow" aria-hidden="true">→</span>`;
@@ -290,7 +289,7 @@ function markBattleProgress(config,misses){
   if(config.kind==='normal'){
     const progress=state.stageProgress[config.factor][config.mode];
     firstClear=!progress.cleared; progress.cleared=true;
-    if(config.mode==='random' && misses===0) progress.noMiss=true;
+    if(misses===0) progress.noMiss=true;
     state.mastery[config.factor]=isMaster(state,config.factor);
   }else{
     firstClear=!state.bossProgress[config.bossId].defeated;
@@ -300,16 +299,13 @@ function markBattleProgress(config,misses){
 }
 
 function awardCollection(firstClear){
+  // コレクションはランダム抽選にせず、初クリアごとに一覧の順で1つずつ集める。
+  if(!firstClear) return null;
   const owned=new Set(state.collections);
-  if(!firstClear && Math.random()>.45) return null;
-  let candidates=ALL_COLLECTIONS.filter((item)=>!owned.has(item.id));
-  if(firstClear){ const common=candidates.filter((item)=>item.rarity==='common'); if(common.length)candidates=common; }
-  if(!candidates.length) return null;
-  if(!firstClear){
-    const roll=Math.random(); const rarity=roll<.7?'common':roll<.9?'rare':roll<.98?'super-rare':'secret';
-    const same=candidates.filter((item)=>item.rarity===rarity); if(same.length)candidates=same;
-  }
-  const item=pick(candidates); state.collections.push(item.id); return item;
+  const item=COLLECTIONS.find((candidate)=>!owned.has(candidate.id));
+  if(!item) return null;
+  state.collections.push(item.id);
+  return item;
 }
 
 function finishBattle(win,reason){
@@ -501,10 +497,48 @@ function renderBook(){
   allMonsters().forEach((monster)=>{const got=state.monsterBook[monster.id],card=document.createElement('article');card.className='book-card'+(got?' sticker-monster-card effect-'+stickerEffect():'');card.innerHTML=`<img class="${got?'sticker-monster-image':'locked-image'}" src="${monster.image}" alt=""><strong>${got?monster.name:'？'}</strong><span>${got?`撃破 ${state.monsterDefeatCounts[monster.id]||0}回`:'まだ出会っていません'}</span>`;grid.append(card);});
 }
 
+function earnedAchievementBadges(){
+  const stats=Object.values(state.multiplicationStats||{});
+  const attempts=stats.reduce((sum,item)=>sum+(item.attempts||0),0);
+  const correct=stats.reduce((sum,item)=>sum+(item.correct||0),0);
+  const wrong=stats.reduce((sum,item)=>sum+(item.wrong||0),0);
+  const retained=stats.filter((item)=>Boolean(item.retentionConfirmedAt)&&!item.reviewActive).length;
+  const clearedModes=FACTORS.reduce((sum,factor)=>sum+['up','down','random'].filter((mode)=>state.stageProgress[factor]?.[mode]?.cleared).length,0);
+  const perfect=FACTORS.some((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.noMiss));
+  const maxCombo=Math.max(0,...Object.values(state.maxCombos||{}));
+  const masterCount=FACTORS.filter((factor)=>isMaster(state,factor)).length;
+  const bossCount=Object.values(state.bossProgress||{}).filter((boss)=>boss.defeated).length;
+  const allFacts=Object.keys(state.multiplicationStats||{}).length;
+  const earned={
+    'first-step':attempts>=1, challenger:clearedModes>=1||bossCount>=1, clear:clearedModes>=1, perfect,
+    accuracy:attempts>=20&&correct/Math.max(1,attempts)>=.9, combo:maxCombo>=5,
+    'keep-going':attempts>=30, 'hard-worker':attempts>=81, 'level-up':state.playerLevel>=2,
+    'review-master':retained>=1, breakthrough:retained>=3, 'never-give-up':wrong>=1&&retained>=1,
+    mastery:masterCount>=1, adventurer:bossCount>=1, 'steady-progress':clearedModes>=9,
+    champion:bossCount===3, explorer:allFacts>=27
+  };
+  return ACHIEVEMENT_BADGES.filter((badge)=>earned[badge.id]).map((badge)=>badge.id);
+}
+
 function renderCollection(){
-  const owned=new Set(state.collections); $('#collection-count').textContent=`${owned.size} / ${ALL_COLLECTIONS.length} 集まったよ`;
-  const grid=$('#collection-grid');grid.innerHTML='';
-  ALL_COLLECTIONS.forEach((item)=>{const got=owned.has(item.id),card=document.createElement('article');card.className=`collection-card rarity-${item.rarity}${got?'':' locked'}`;card.innerHTML=`<img class="${got?'':'locked-image'}" src="${item.image}" alt=""><strong>${got?item.name:'？'}</strong><span>${got?(item.category==='math'?'算数バッジ':item.rarity.toUpperCase().replace('-',' ')):'未獲得'}</span>`;grid.append(card);});
+  const earnedIds=new Set(earnedAchievementBadges());
+  $('#badge-count').textContent='バッジ '+earnedIds.size+' / '+ACHIEVEMENT_BADGES.length+' 個';
+  const badgeGrid=$('#badge-grid'); badgeGrid.innerHTML='';
+  ACHIEVEMENT_BADGES.forEach((item)=>{
+    const got=earnedIds.has(item.id),card=document.createElement('article');
+    card.className='achievement-card'+(got?' earned':' locked');
+    card.innerHTML='<img class="'+(got?'':'locked-image')+'" src="'+item.image+'" alt=""><strong>'+item.name+'</strong><span>'+(got?'獲得済み':'まだ獲得していません')+'</span><small>'+item.criteria+'</small>';
+    const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; badgeGrid.append(card);
+  });
+  const owned=new Set(state.collections.filter((id)=>COLLECTIONS.some((item)=>item.id===id)));
+  $('#collection-count').textContent='コレクション '+owned.size+' / '+COLLECTIONS.length+' 個';
+  const grid=$('#collection-grid'); grid.innerHTML='';
+  COLLECTIONS.forEach((item)=>{
+    const got=owned.has(item.id),card=document.createElement('article');
+    card.className='collection-card rarity-'+item.rarity+(got?'':' locked');
+    card.innerHTML='<img class="'+(got?'':'locked-image')+'" src="'+item.image+'" alt=""><strong>'+(got?item.name:'？')+'</strong><span>'+(got?'集めたよ':'未獲得')+'</span>';
+    const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; grid.append(card);
+  });
 }
 
 function renderSettings(){
