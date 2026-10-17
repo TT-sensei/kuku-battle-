@@ -46,7 +46,13 @@ const BOSS_CONFIG={
   final:{title:'大ボス・1〜9すべて',hp:20,time:120,min:1,max:9,monster:BOSSES.final}
 };
 
-function save(){ storage.save('state',state); }
+function save(){
+  // バッジは一度獲得したら、あとで正答率が変わっても獲得済みのまま残す。
+  const snapshot=badgeSnapshot();
+  const newlyEarned=[...ACHIEVEMENT_BADGES,...MATH_BADGES].filter((item)=>badgeStatus(item,snapshot).got).map((item)=>item.id);
+  state.earnedBadges=[...new Set([...(state.earnedBadges||[]),...newlyEarned])];
+  storage.save('state',state);
+}
 function pick(list){ return list[Math.floor(Math.random()*list.length)]; }
 function normalMonsterForFactor(factor){ return pick(NORMAL_MONSTER_GROUPS[Math.floor((factor-1)/3)]); }
 function bossMonsterForId(bossId){ return pick(BOSS_CANDIDATES[bossId]); }
@@ -625,7 +631,8 @@ let badgeFilter='all';
 function renderCollection(){
   const snap=badgeSnapshot();
   const badges=[...ACHIEVEMENT_BADGES,...MATH_BADGES];
-  const statuses=new Map(badges.map((item)=>[item.id,badgeStatus(item,snap)]));
+  const earnedHistory=new Set(state.earnedBadges||[]);
+  const statuses=new Map(badges.map((item)=>{const status=badgeStatus(item,snap);if(earnedHistory.has(item.id))status.got=true;return [item.id,status];}));
   const earned=badges.filter((item)=>statuses.get(item.id).got).length;
   $('#badge-count').textContent='獲得 '+earned+' / '+badges.length+' 個';
   const badgeGrid=$('#badge-grid'); badgeGrid.innerHTML='';
