@@ -526,7 +526,7 @@ function badgeSnapshot(){
   const monsters=Object.values(state.monsterBook||{}).filter(Boolean).length;
   const allCorrect=distinct===81&&distinctCorrect===81;
   const accuracy=correct/Math.max(1,attempts);
-  return {byKey,entries,stats,attempts,correct,wrong,retained,clearedModes,noMissModes,masterCount,bossCount,maxCombo,distinct,distinctCorrect,comebacks,bossDefeats,monsters,allCorrect,accuracy};
+  return {byKey,entries,stats,attempts,correct,wrong,retained,clearedModes,noMissModes,masterCount,verifiedFactors,bossCount,maxCombo,distinct,distinctCorrect,comebacks,bossDefeats,monsters,allCorrect,accuracy};
 }
 
 function badgeStatus(item, snap){
@@ -576,35 +576,66 @@ function badgeStatus(item, snap){
   if(item.category==='math'){
     const id=item.id;
     const has=(key)=>Boolean(byKey[key]&&(byKey[key].correct||0)>0);
-    const pairs=entries.filter(([key,v])=>{if(!(v.correct||0))return false;const [a,b]=key.split('x').map(Number);return a!==b&&has(b+'x'+a);}).length;
+    const pairs=entries.filter(([key,v])=>{if(!(v.correct||0))return false;const [a,b]=key.split('x').map(Number);return a!==b&&has(b+'x'+a);}).length/2;
+    const stage4=['up','down','random'].filter((mode)=>state.stageProgress[4]?.[mode]?.cleared).length;
     const mathEarned={
       'math-calculation':attempts>=10&&accuracy>=.85,
-      'math-mental-math':correct>=27&&accuracy>=.8,
-      'math-number-sense':distinct>=45,
-      'math-pattern':masterCount>=5,
-      'math-relationship':pairs>=6,
+      'math-mental-math':correct>=27,
+      'math-number-sense':distinct>=9,
+      'math-number-line':clearedModes>=1,
+      'math-fraction-sense':clearedModes>=3,
+      'math-geometry':stage4>=3,
+      'math-measurement':noMissModes>=3,
+      'math-spatial-sense':masterCount>=1,
+      'math-pattern':masterCount>=3,
+      'math-relationship':pairs>=3,
       'math-strategy':clearedModes>=3,
-      'math-verification':verifiedFactors>=9,
+      'math-verification':noMissModes>=1,
+      'math-simplify':attempts>=9&&accuracy>=.75,
+      'math-another-way':comebacks>=1,
+      'math-classification':monsters>=5,
+      'math-generalization':masterCount>=3,
+      'math-logical-thinking':distinctCorrect>=27,
+      'math-compare':distinct>=18,
       'math-math-discovery':distinct>=40,
-      'math-reverse-thinking':pairs>=18
+      'math-evidence':noMissModes>=3,
+      'math-explainer':correct>=27,
+      'math-prediction':state.playerLevel>=3,
+      'math-representation-link':distinct>=54,
+      'math-reverse-thinking':pairs>=18,
+      'math-visualize':stage4>=3
     };
-    const applicable=Object.hasOwn(mathEarned,id);
-    const got=Boolean(mathEarned[id]);
     const progressMap={
       'math-calculation':[Math.min(attempts,10),10,'回答数'],
       'math-mental-math':[Math.min(correct,27),27,'正解数'],
-      'math-number-sense':[Math.min(distinct,45),45,'異なる九九'],
-      'math-pattern':[Math.min(masterCount,5),5,'MASTERの段'],
-      'math-relationship':[Math.min(pairs,6),6,'逆向きも正解した組'],
+      'math-number-sense':[Math.min(distinct,9),9,'異なる九九'],
+      'math-number-line':[Math.min(clearedModes,1),1,'クリアモード'],
+      'math-fraction-sense':[Math.min(clearedModes,3),3,'クリアモード'],
+      'math-geometry':[stage4,3,'4の段のクリアモード'],
+      'math-measurement':[Math.min(noMissModes,3),3,'ノーミスクリア'],
+      'math-spatial-sense':[Math.min(masterCount,1),1,'MASTERの段'],
+      'math-pattern':[Math.min(masterCount,3),3,'MASTERの段'],
+      'math-relationship':[Math.min(pairs,3),3,'逆向きも正解した組'],
       'math-strategy':[Math.min(clearedModes,3),3,'クリアモード'],
-      'math-verification':[Math.min(verifiedFactors,9),9,'ノーミスクリアした段'],
+      'math-verification':[Math.min(noMissModes,1),1,'ノーミスクリア'],
+      'math-simplify':[Math.min(attempts,9),9,'回答数'],
+      'math-another-way':[Math.min(comebacks,1),1,'立て直し'],
+      'math-classification':[Math.min(monsters,5),5,'ナビアンの種類'],
+      'math-generalization':[Math.min(masterCount,3),3,'MASTERの段'],
+      'math-logical-thinking':[Math.min(distinctCorrect,27),27,'正解記録のある九九'],
+      'math-compare':[Math.min(distinct,18),18,'異なる九九'],
       'math-math-discovery':[Math.min(distinct,40),40,'異なる九九'],
-      'math-reverse-thinking':[Math.min(pairs,18),18,'逆向きも正解した組']
+      'math-evidence':[Math.min(noMissModes,3),3,'ノーミスクリア'],
+      'math-explainer':[Math.min(correct,27),27,'正解数'],
+      'math-prediction':[Math.min(state.playerLevel,3),3,'レベル'],
+      'math-representation-link':[Math.min(distinct,54),54,'異なる九九'],
+      'math-reverse-thinking':[Math.min(pairs,18),18,'逆向きも正解した組'],
+      'math-visualize':[stage4,3,'4の段のクリアモード']
     };
     const p=progressMap[id];
-    const extra=(id==='math-calculation'||id==='math-mental-math')?'・正答率 '+Math.round(snap.accuracy*100)+'%':'';
-    const accuracyNear=id==='math-calculation'?snap.accuracy>=.75:id==='math-mental-math'?snap.accuracy>=.7:true;
-    return {got,applicable,progress:p? p[0]+'/'+p[1]+' '+p[2]+extra:'このアプリでは獲得判定しない',near:applicable&&!got&&p&&p[0]>=p[1]*.6&&accuracyNear};
+    const got=Boolean(mathEarned[id]);
+    const accuracyNear=id==='math-calculation'?accuracy>=.75:id==='math-simplify'?accuracy>=.65:true;
+    return {got,applicable:true,progress:p?p[0]+'/'+p[1]+' '+p[2]:'条件達成',near:!got&&p&&p[0]>=p[1]*.6&&accuracyNear};
   }
   const got=Boolean(achieved[item.id]);
   const targets={
