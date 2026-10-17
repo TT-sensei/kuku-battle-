@@ -97,4 +97,6 @@ const savedAgain=migrateState(JSON.parse(JSON.stringify({...state,monsterBook:{s
 assert.equal(savedAgain.monsterBook.slime,true);
 assert.equal(savedAgain.mastery[7],true);
 assert.equal(savedAgain.maxCombos['7-random'],9);
+const badgeSave=migrateState(JSON.parse(JSON.stringify({...defaultState(),earnedBadges:['first-step','facts-81']})));
+assert.deepEqual(badgeSave.earnedBadges,['first-step','facts-81']);
 console.log('All multiplication, SPECIAL, reviewQueue and persistence tests passed.');
