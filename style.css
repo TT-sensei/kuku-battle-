@@ -648,3 +648,23 @@
   #stage-grid .stage-card.adventure-stage,#adventure .boss-card.adventure-boss{transition:none}
   #stage-grid .stage-card.adventure-stage:hover,#adventure .boss-card.adventure-boss:hover{transform:none}
 }
+
+
+/* 学びのバッジ：条件達成が分かる、落ち着いたコレクション表示 */
+.collection-section{margin-top:28px}
+.collection-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:8px}
+.collection-section-head h3{margin:0;font-size:clamp(1.3rem,2.5vw,1.8rem);color:var(--deep)}
+.collection-section-head .eyebrow{margin:0 0 4px}
+.collection-section-note{margin:0 0 14px;color:var(--muted);font-size:.9rem}
+.achievement-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.achievement-card{min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 10px;box-shadow:0 5px 14px rgba(23,50,77,.045)}
+.achievement-card img{width:min(100%,116px);aspect-ratio:1;object-fit:contain}
+.achievement-card strong{font-size:.98rem;color:var(--deep)}
+.achievement-card span{font-size:.75rem;font-weight:850;color:#8a949e}
+.achievement-card small{font-size:.78rem;line-height:1.45;color:var(--muted)}
+.achievement-card.earned{border-color:#e4c66d;background:linear-gradient(160deg,#fffdf5,#fff8df);box-shadow:0 4px 0 #f1e0a7}
+.achievement-card.earned span{color:#8b6915}
+.achievement-card.locked{background:#f6f7f8}
+.achievement-card.locked img{opacity:.42;filter:grayscale(1)}
+@media(max-width:850px){.achievement-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.achievement-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.achievement-card{padding:11px 8px}.achievement-card img{width:min(100%,96px)}.collection-section-head{align-items:start;flex-direction:column;gap:6px}}
