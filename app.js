@@ -1,7 +1,7 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
 import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, ALL_COLLECTIONS, ENCOURAGEMENT } from './data.js';
-import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
+import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, questionStatus, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
@@ -454,7 +454,29 @@ function renderMap(){
   $('#map-retained-count').textContent=retainedCount+' / 81';
   const keys=recommendedKeys(state,5),list=$('#recommend-list');
   list.innerHTML=keys.length?keys.map((key)=>'<button class="recommend-equation" data-train-key="'+key+'"><span>'+formatFormula(parseKey(key))+'</span><small>もう一度れんしゅう</small><b aria-hidden="true">→</b></button>').join(''):'<div class="recommend-empty"><strong>いまは特訓まちの九九はないよ！</strong><span>気になる段をえらんで、ランダムれんしゅうにちょうせんしよう。</span></div>';
-  $$('[data-train-key]',list).forEach((b)=>b.addEventListener('click',()=>startTraining('battle',null,[b.dataset.trainKey])));
+  $('[data-train-key]',list).forEach((b)=>b.addEventListener('click',()=>startTraining('battle',null,[b.dataset.trainKey])));
+  const board=$('#fact-board');
+  if(board){
+    board.innerHTML='';
+    board.append(Object.assign(document.createElement('span'),{className:'fact-axis-corner',textContent:'×'}));
+    FACTORS.forEach((b)=>board.append(Object.assign(document.createElement('span'),{className:'fact-axis',textContent:String(b)})));
+    FACTORS.forEach((a)=>{
+      board.append(Object.assign(document.createElement('span'),{className:'fact-axis fact-row-axis',textContent:String(a)}));
+      FACTORS.forEach((b)=>{
+        const key=`${a}x${b}`;
+        const status=questionStatus(state,key);
+        const cell=document.createElement('button');
+        cell.type='button';
+        cell.className=`fact-cell ${status}`;
+        cell.textContent=String(a*b);
+        const labels={'needs-review':'特訓',retained:'定着確認',recorded:'記録あり',unseen:'未挑戦'};
+        cell.setAttribute('aria-label',`${a}かける${b}は${a*b}、${labels[status]}。タップして練習`);
+        cell.title=`${a} × ${b} ＝ ${a*b}：${labels[status]}`;
+        cell.addEventListener('click',()=>startTraining('battle',null,[key]));
+        board.append(cell);
+      });
+    });
+  }
 }
 function allMonsters(){ return [...NORMAL_MONSTERS,...Object.values(BOSS_CANDIDATES).flat()]; }
 const STICKER_EFFECTS=['holo','rainbow','glitter','neon','aurora','prism'];
