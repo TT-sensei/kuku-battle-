@@ -125,7 +125,7 @@ export const MATH_BADGES=[
   criteria:({
     calculation:'10回以上回答し、正答率85%以上',
     'mental-math':'27回以上正解し、正答率80%以上',
-    'number-sense':'異なる九九を54問以上記録',
+    'number-sense':'異なる九九を45問以上記録',
     'number-line':'このアプリでは獲得判定しない',
     'fraction-sense':'このアプリでは獲得判定しない',
     geometry:'このアプリでは獲得判定しない',
@@ -141,7 +141,7 @@ export const MATH_BADGES=[
     generalization:'このアプリでは獲得判定しない',
     'logical-thinking':'このアプリでは獲得判定しない',
     'math-compare':'このアプリでは獲得判定しない',
-    'math-discovery':'異なる九九を27問以上記録',
+    'math-discovery':'異なる九九を40問以上記録',
     'math-evidence':'このアプリでは獲得判定しない',
     'math-explainer':'このアプリでは獲得判定しない',
     'math-prediction':'このアプリでは獲得判定しない',
@@ -194,7 +194,7 @@ export const ACHIEVEMENT_BADGES=[
   ['mode-variety','練習スタイルの探究者','いろいろな段・モードに挑戦','9段それぞれで1モード以上クリア'],
   ['boss-all','ボス連戦の覇者','ボスとの戦いを重ねた','ボス撃破の合計が10回以上'],
   ['long-journey','冒険の積み重ね','200回回答に取り組んだ','回答記録200回以上'],
-  ['first-retention','定着の第一歩','時間を空けて覚えたことを確認','間隔を空けた再確認で1問定着']
+  ['first-retention','定着の二歩目','時間を空けた再確認を重ねた','間隔を空けた再確認で2問定着']
 ].map(([id,name,description,criteria])=>({id,name,description,criteria,rarity:'common',image:BADGE_ASSETS+'/'+id+'/badge.webp'}));
 
 // コレクションはステージやボスの初クリア報酬。学びのバッジとは分けて表示する。
