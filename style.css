@@ -154,3 +154,8 @@
  .map-overview strong{font-size:1rem}
 }
 @media(prefers-reduced-motion:reduce){.mode-card,.map-stage-card,.home-continue-button{transition:none}.mode-card:hover,.map-stage-card:hover{transform:none}}
+
+/* Resolve legacy card rules for the new button-based map */
+.map-stage-card .grade{margin:0;padding:0;background:transparent;border-radius:0}
+#recommend-list .recommend-equation{margin:0}
+.map-stage-card .map-card-head{margin:0}
