@@ -668,3 +668,16 @@
 .achievement-card.locked img{opacity:.42;filter:grayscale(1)}
 @media(max-width:850px){.achievement-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.achievement-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.achievement-card{padding:11px 8px}.achievement-card img{width:min(100%,96px)}.collection-section-head{align-items:start;flex-direction:column;gap:6px}}
+
+
+/* Unified achievement collection */
+.badge-filter-row{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin:1rem 0 1.15rem}
+.badge-filter-row button{border:1px solid #c9d8e4;border-radius:999px;background:#fff;color:#29445a;padding:.55rem .9rem;font:inherit;font-size:.9rem;font-weight:700;cursor:pointer}
+.badge-filter-row button.selected{background:#244d68;color:#fff;border-color:#244d68}
+.badge-filter-row button:focus-visible{outline:3px solid #e6a23c;outline-offset:2px}
+.badge-filter-row span{margin-left:auto;color:#607487;font-size:.82rem}
+.achievement-card .badge-progress{display:block;margin-top:.2rem;color:#597184;font-size:.78rem;font-weight:700}
+.achievement-card.near{border-color:#d6a64c;box-shadow:0 0 0 1px rgba(214,166,76,.18)}
+.achievement-card.catalog-only{opacity:.78}
+.achievement-card.catalog-only .badge-progress{font-weight:500}
+@media(max-width:520px){.badge-filter-row{gap:.35rem}.badge-filter-row button{padding:.48rem .7rem;font-size:.82rem}.badge-filter-row span{width:100%;margin-left:0}}
