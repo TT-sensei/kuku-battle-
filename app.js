@@ -1,6 +1,6 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
-import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, COLLECTIONS, ACHIEVEMENT_BADGES, ENCOURAGEMENT } from './data.js';
+import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, COLLECTIONS, MATH_BADGES, ACHIEVEMENT_BADGES, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, questionStatus, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -529,6 +529,13 @@ function renderCollection(){
     card.className='achievement-card'+(got?' earned':' locked');
     card.innerHTML='<img class="'+(got?'':'locked-image')+'" src="'+item.image+'" alt=""><strong>'+item.name+'</strong><span>'+(got?'獲得済み':'まだ獲得していません')+'</span><small>'+item.criteria+'</small>';
     const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; badgeGrid.append(card);
+  });
+  $('#math-badge-count').textContent='算数スキル '+MATH_BADGES.length+' 種類';
+  const mathGrid=$('#math-badge-grid'); mathGrid.innerHTML='';
+  MATH_BADGES.forEach((item)=>{
+    const card=document.createElement('article'); card.className='achievement-card math-skill-badge';
+    card.innerHTML='<img src="'+item.image+'" alt=""><strong>'+item.name+'</strong><span>算数の力</span>';
+    const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; mathGrid.append(card);
   });
   const owned=new Set(state.collections.filter((id)=>COLLECTIONS.some((item)=>item.id===id)));
   $('#collection-count').textContent='コレクション '+owned.size+' / '+COLLECTIONS.length+' 個';
