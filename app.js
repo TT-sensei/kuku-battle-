@@ -1,3 +1,4 @@
+import { enableFurigana } from './furigana.js';
 import { EDU_EVENTS, StorageManager, ScreenManager, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
 import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, COLLECTIONS, MATH_BADGES, ACHIEVEMENT_BADGES, ENCOURAGEMENT } from './data.js';
@@ -764,3 +765,4 @@ document.addEventListener(EDU_EVENTS.WRONG,()=>{
 
 window.addEventListener('error',(event)=>{if(event.target instanceof HTMLImageElement)event.target.hidden=true;},true);
 renderHome(); screenManager.show('home',{scroll:false});
+enableFurigana();
