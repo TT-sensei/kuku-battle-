@@ -514,6 +514,7 @@ function badgeSnapshot(){
   const clearedModes=FACTORS.reduce((sum,factor)=>sum+['up','down','random'].filter((mode)=>state.stageProgress[factor]?.[mode]?.cleared).length,0);
   const noMissModes=FACTORS.reduce((sum,factor)=>sum+['up','down','random'].filter((mode)=>state.stageProgress[factor]?.[mode]?.noMiss).length,0);
   const masterCount=FACTORS.filter((factor)=>isMaster(state,factor)).length;
+  const verifiedFactors=FACTORS.filter((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.noMiss)).length;
   const bossCount=Object.values(state.bossProgress||{}).filter((boss)=>boss.defeated).length;
   const maxCombo=Math.max(0,...Object.values(state.maxCombos||{}));
   const distinct=entries.length;
@@ -529,7 +530,7 @@ function badgeSnapshot(){
 }
 
 function badgeStatus(item, snap){
-  const {byKey,entries,attempts,correct,wrong,retained,clearedModes,noMissModes,masterCount,bossCount,maxCombo,distinct,distinctCorrect,comebacks,bossDefeats,monsters,allCorrect,accuracy}=snap;
+  const {byKey,entries,attempts,correct,wrong,retained,clearedModes,noMissModes,masterCount,verifiedFactors,bossCount,maxCombo,distinct,distinctCorrect,comebacks,bossDefeats,monsters,allCorrect,accuracy}=snap;
   const owned=state.collections.filter((id)=>COLLECTIONS.some((c)=>c.id===id)).length;
   const achieved={
     'first-step':attempts>=1,
@@ -570,7 +571,7 @@ function badgeStatus(item, snap){
     'mode-variety':FACTORS.every((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.cleared)),
     'boss-all':bossDefeats>=10,
     'long-journey':attempts>=200,
-    'first-retention':retained>=1
+    'first-retention':retained>=2
   };
   if(item.category==='math'){
     const id=item.id;
@@ -579,12 +580,12 @@ function badgeStatus(item, snap){
     const mathEarned={
       'math-calculation':attempts>=10&&accuracy>=.85,
       'math-mental-math':correct>=27&&accuracy>=.8,
-      'math-number-sense':distinct>=54,
-      'math-pattern':masterCount>=3,
+      'math-number-sense':distinct>=45,
+      'math-pattern':masterCount>=5,
       'math-relationship':pairs>=6,
       'math-strategy':clearedModes>=3,
-      'math-verification':noMissModes>=1,
-      'math-math-discovery':distinct>=27,
+      'math-verification':verifiedFactors>=9,
+      'math-math-discovery':distinct>=40,
       'math-reverse-thinking':pairs>=18
     };
     const applicable=Object.hasOwn(mathEarned,id);
@@ -592,12 +593,12 @@ function badgeStatus(item, snap){
     const progressMap={
       'math-calculation':[Math.min(attempts,10),10,'回答数'],
       'math-mental-math':[Math.min(correct,27),27,'正解数'],
-      'math-number-sense':[Math.min(distinct,54),54,'異なる九九'],
-      'math-pattern':[Math.min(masterCount,3),3,'MASTERの段'],
+      'math-number-sense':[Math.min(distinct,45),45,'異なる九九'],
+      'math-pattern':[Math.min(masterCount,5),5,'MASTERの段'],
       'math-relationship':[Math.min(pairs,6),6,'逆向きも正解した組'],
       'math-strategy':[Math.min(clearedModes,3),3,'クリアモード'],
-      'math-verification':[Math.min(noMissModes,1),1,'ノーミスクリア'],
-      'math-math-discovery':[Math.min(distinct,27),27,'異なる九九'],
+      'math-verification':[Math.min(verifiedFactors,9),9,'ノーミスクリアした段'],
+      'math-math-discovery':[Math.min(distinct,40),40,'異なる九九'],
       'math-reverse-thinking':[Math.min(pairs,18),18,'逆向きも正解した組']
     };
     const p=progressMap[id];
@@ -617,7 +618,7 @@ function badgeStatus(item, snap){
     'collection-5':[owned,5,'集めた宝物'],'collection-all':[owned,COLLECTIONS.length,'集めた宝物'],'retained-5':[retained,5,'定着した九九'],'retained-10':[retained,10,'定着した九九'],
     'accuracy-50':[Math.min(attempts,50),50,'回答数'],'accuracy-100':[Math.min(attempts,100),100,'回答数'],'combo-10':[maxCombo,10,'最大コンボ'],
     'comeback-5':[comebacks,5,'立て直し'],'mode-variety':[FACTORS.filter((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.cleared)).length,9,'クリアした段'],
-    'boss-all':[bossDefeats,10,'ボス撃破回数'],'long-journey':[attempts,200,'回答数'],'first-retention':[retained,1,'定着した九九']
+    'boss-all':[bossDefeats,10,'ボス撃破回数'],'long-journey':[attempts,200,'回答数'],'first-retention':[retained,2,'定着した九九']
   };
   const p=targets[item.id];
   const value=p?Math.min(p[0],p[1]):0;
