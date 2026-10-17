@@ -497,52 +497,152 @@ function renderBook(){
   allMonsters().forEach((monster)=>{const got=state.monsterBook[monster.id],card=document.createElement('article');card.className='book-card'+(got?' sticker-monster-card effect-'+stickerEffect():'');card.innerHTML=`<img class="${got?'sticker-monster-image':'locked-image'}" src="${monster.image}" alt=""><strong>${got?monster.name:'？'}</strong><span>${got?`撃破 ${state.monsterDefeatCounts[monster.id]||0}回`:'まだ出会っていません'}</span>`;grid.append(card);});
 }
 
-function earnedAchievementBadges(){
-  const stats=Object.values(state.multiplicationStats||{});
+function badgeSnapshot(){
+  const byKey=state.multiplicationStats||{};
+  const entries=Object.entries(byKey).filter(([,v])=>(v.attempts||0)>0);
+  const stats=Object.values(byKey);
   const attempts=stats.reduce((sum,item)=>sum+(item.attempts||0),0);
   const correct=stats.reduce((sum,item)=>sum+(item.correct||0),0);
   const wrong=stats.reduce((sum,item)=>sum+(item.wrong||0),0);
   const retained=stats.filter((item)=>Boolean(item.retentionConfirmedAt)&&!item.reviewActive).length;
   const clearedModes=FACTORS.reduce((sum,factor)=>sum+['up','down','random'].filter((mode)=>state.stageProgress[factor]?.[mode]?.cleared).length,0);
-  const perfect=FACTORS.some((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.noMiss));
-  const maxCombo=Math.max(0,...Object.values(state.maxCombos||{}));
+  const noMissModes=FACTORS.reduce((sum,factor)=>sum+['up','down','random'].filter((mode)=>state.stageProgress[factor]?.[mode]?.noMiss).length,0);
   const masterCount=FACTORS.filter((factor)=>isMaster(state,factor)).length;
   const bossCount=Object.values(state.bossProgress||{}).filter((boss)=>boss.defeated).length;
-  const allFacts=Object.keys(state.multiplicationStats||{}).length;
-  const earned={
-    'first-step':attempts>=1, comeback:(state.recentAttempts||[]).some((attempt,index,items)=>!attempt.correct&&items.slice(index+1).some((later)=>later.correct)), clear:clearedModes>=1, perfect,
-    accuracy:attempts>=20&&correct/Math.max(1,attempts)>=.9, combo:maxCombo>=5,
-    'keep-going':attempts>=30, 'hard-worker':attempts>=81, 'level-up':state.playerLevel>=2,
-    'review-master':retained>=1, breakthrough:retained>=3, 'never-give-up':wrong>=1&&retained>=1,
-    mastery:masterCount>=1, adventurer:bossCount>=1, 'steady-progress':clearedModes>=9,
-    champion:bossCount===3, explorer:allFacts>=27
-  };
-  return ACHIEVEMENT_BADGES.filter((badge)=>earned[badge.id]).map((badge)=>badge.id);
+  const maxCombo=Math.max(0,...Object.values(state.maxCombos||{}));
+  const distinct=entries.length;
+  const distinctCorrect=entries.filter(([,v])=>(v.correct||0)>0).length;
+  const recent=state.recentAttempts||[];
+  const comebacks=recent.filter((item,index)=>!item.correct&&recent[index+1]?.correct).length;
+  const bossIds=new Set(Object.values(BOSS_CANDIDATES).flat().map((item)=>item.id));
+  const bossDefeats=Object.entries(state.monsterDefeatCounts||{}).reduce((sum,[id,n])=>sum+(bossIds.has(id)?n:0),0);
+  const monsters=Object.values(state.monsterBook||{}).filter(Boolean).length;
+  const allCorrect=distinct===81&&distinctCorrect===81;
+  const accuracy=correct/Math.max(1,attempts);
+  return {byKey,entries,stats,attempts,correct,wrong,retained,clearedModes,noMissModes,masterCount,bossCount,maxCombo,distinct,distinctCorrect,comebacks,bossDefeats,monsters,allCorrect,accuracy};
 }
 
+function badgeStatus(item, snap){
+  const {byKey,entries,attempts,correct,wrong,retained,clearedModes,noMissModes,masterCount,bossCount,maxCombo,distinct,distinctCorrect,comebacks,bossDefeats,monsters,allCorrect,accuracy}=snap;
+  const owned=state.collections.filter((id)=>COLLECTIONS.some((c)=>c.id===id)).length;
+  const achieved={
+    'first-step':attempts>=1,
+    comeback:comebacks>=1,
+    clear:clearedModes>=1,
+    perfect:noMissModes>=1,
+    accuracy:attempts>=20&&accuracy>=.9,
+    combo:maxCombo>=5,
+    'keep-going':attempts>=30,
+    'hard-worker':attempts>=81,
+    'level-up':state.playerLevel>=2,
+    'review-master':retained>=1,
+    breakthrough:retained>=3,
+    'never-give-up':wrong>=1&&retained>=1,
+    mastery:masterCount>=1,
+    adventurer:bossCount>=1,
+    'steady-progress':clearedModes>=9,
+    champion:bossCount===3,
+    explorer:distinct>=27,
+    'facts-9':distinct>=9,
+    'facts-54':distinct>=54,
+    'facts-81':distinct>=81,
+    'all-correct':allCorrect,
+    'three-tables':masterCount>=3,
+    'all-tables':masterCount>=9,
+    'perfect-three':noMissModes>=3,
+    'boss-repeat':bossDefeats>=5,
+    'monster-10':monsters>=10,
+    'monster-30':monsters>=30,
+    'collection-5':owned>=5,
+    'collection-all':owned>=COLLECTIONS.length,
+    'retained-5':retained>=5,
+    'retained-10':retained>=10,
+    'accuracy-50':attempts>=50&&accuracy>=.9,
+    'accuracy-100':attempts>=100&&accuracy>=.95,
+    'combo-10':maxCombo>=10,
+    'comeback-5':comebacks>=5,
+    'mode-variety':FACTORS.every((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.cleared)),
+    'boss-all':bossCount===3,
+    'long-journey':attempts>=200,
+    'first-retention':retained>=1
+  };
+  if(item.category==='math'){
+    const id=item.id;
+    const has=(key)=>Boolean(byKey[key]&&(byKey[key].correct||0)>0);
+    const pairs=entries.filter(([key,v])=>{if(!(v.correct||0))return false;const [a,b]=key.split('x').map(Number);return a!==b&&has(b+'x'+a);}).length;
+    const mathEarned={
+      'math-calculation':attempts>=10&&accuracy>=.85,
+      'math-mental-math':correct>=27&&accuracy>=.8,
+      'math-number-sense':distinct>=54,
+      'math-pattern':masterCount>=3,
+      'math-relationship':pairs>=6,
+      'math-strategy':clearedModes>=3,
+      'math-verification':noMissModes>=1,
+      'math-math-discovery':distinct>=27,
+      'math-reverse-thinking':pairs>=18
+    };
+    const applicable=Object.hasOwn(mathEarned,id);
+    const got=Boolean(mathEarned[id]);
+    const progressMap={
+      'math-calculation':[Math.min(attempts,10),10,'回答数'],
+      'math-mental-math':[Math.min(correct,27),27,'正解数'],
+      'math-number-sense':[Math.min(distinct,54),54,'異なる九九'],
+      'math-pattern':[Math.min(masterCount,3),3,'MASTERの段'],
+      'math-relationship':[Math.min(pairs,6),6,'逆向きも正解した組'],
+      'math-strategy':[Math.min(clearedModes,3),3,'クリアモード'],
+      'math-verification':[Math.min(noMissModes,1),1,'ノーミスクリア'],
+      'math-math-discovery':[Math.min(distinct,27),27,'異なる九九'],
+      'math-reverse-thinking':[Math.min(pairs,18),18,'逆向きも正解した組']
+    };
+    const p=progressMap[id];
+    return {got,applicable,progress:p? p[0]+'/'+p[1]+' '+p[2]:'このアプリでは獲得判定しない',near:applicable&&!got&&p&&p[0]>=p[1]*.6};
+  }
+  const got=Boolean(achieved[item.id]);
+  const targets={
+    'first-step':[attempts,1,'回答'],'comeback':[comebacks,1,'立て直し'],'clear':[clearedModes,1,'クリアモード'],'perfect':[noMissModes,1,'ノーミスクリア'],
+    accuracy:[Math.min(attempts,20),20,'回答数'],'combo':[maxCombo,5,'最大コンボ'],'keep-going':[attempts,30,'回答数'],'hard-worker':[attempts,81,'回答数'],
+    'level-up':[state.playerLevel,2,'レベル'],'review-master':[retained,1,'定着した九九'],breakthrough:[retained,3,'定着した九九'],'never-give-up':[retained,1,'定着した九九'],
+    mastery:[masterCount,1,'MASTERの段'],adventurer:[bossCount,1,'撃破したボス'],'steady-progress':[clearedModes,9,'クリアモード'],champion:[bossCount,3,'撃破したボス'],explorer:[distinct,27,'異なる九九'],
+    'facts-9':[distinct,9,'異なる九九'],'facts-54':[distinct,54,'異なる九九'],'facts-81':[distinct,81,'異なる九九'],'all-correct':[distinctCorrect,81,'正解記録のある九九'],
+    'three-tables':[masterCount,3,'MASTERの段'],'all-tables':[masterCount,9,'MASTERの段'],'perfect-three':[noMissModes,3,'ノーミスクリア'],
+    'boss-repeat':[bossDefeats,5,'ボス撃破回数'],'monster-10':[monsters,10,'図鑑の種類'],'monster-30':[monsters,30,'図鑑の種類'],
+    'collection-5':[owned,5,'集めた宝物'],'collection-all':[owned,COLLECTIONS.length,'集めた宝物'],'retained-5':[retained,5,'定着した九九'],'retained-10':[retained,10,'定着した九九'],
+    'accuracy-50':[Math.min(attempts,50),50,'回答数'],'accuracy-100':[Math.min(attempts,100),100,'回答数'],'combo-10':[maxCombo,10,'最大コンボ'],
+    'comeback-5':[comebacks,5,'立て直し'],'mode-variety':[FACTORS.filter((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.cleared)).length,9,'クリアした段'],
+    'boss-all':[bossCount,3,'撃破したボス'],'long-journey':[attempts,200,'回答数'],'first-retention':[retained,1,'定着した九九']
+  };
+  const p=targets[item.id];
+  const value=p?Math.min(p[0],p[1]):0;
+  return {got,applicable:true,progress:p?value+'/'+p[1]+' '+p[2]:'条件達成',near:!got&&p&&value>=p[1]*.6};
+}
+
+let badgeFilter='all';
 function renderCollection(){
-  const earnedIds=new Set(earnedAchievementBadges());
-  $('#badge-count').textContent='バッジ '+earnedIds.size+' / '+ACHIEVEMENT_BADGES.length+' 個';
+  const snap=badgeSnapshot();
+  const badges=[...ACHIEVEMENT_BADGES,...MATH_BADGES];
+  const statuses=new Map(badges.map((item)=>[item.id,badgeStatus(item,snap)]));
+  const earned=badges.filter((item)=>statuses.get(item.id).got).length;
+  $('#badge-count').textContent='獲得 '+earned+' / '+badges.length+' 個';
   const badgeGrid=$('#badge-grid'); badgeGrid.innerHTML='';
-  ACHIEVEMENT_BADGES.forEach((item)=>{
-    const got=earnedIds.has(item.id),card=document.createElement('article');
-    card.className='achievement-card'+(got?' earned':' locked');
-    card.innerHTML='<img class="'+(got?'':'locked-image')+'" src="'+item.image+'" alt=""><strong>'+item.name+'</strong><span>'+(got?'獲得済み':'まだ獲得していません')+'</span><small>'+item.criteria+'</small>';
+  badges.forEach((item)=>{
+    const status=statuses.get(item.id);
+    if(badgeFilter==='earned'&&!status.got) return;
+    if(badgeFilter==='unearned'&&status.got) return;
+    if(badgeFilter==='near'&&(!status.near||status.got)) return;
+    const got=status.got,card=document.createElement('article');
+    card.className='achievement-card'+(got?' earned':' locked')+(status.near?' near':'')+(status.applicable?'':' catalog-only');
+    const label=got?'獲得済み':status.applicable?(status.near?'もう少し！':'まだ獲得していません'):'ほかの算数教材で活躍するバッジ';
+    card.innerHTML='<img class="'+(got?'':'locked-image')+'" src="'+item.image+'" alt=""><strong>'+item.name+'</strong><span>'+label+'</span><small>'+(item.criteria||item.description||'')+'</small><small class="badge-progress">'+status.progress+'</small>';
     const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; badgeGrid.append(card);
   });
-  $('#math-badge-count').textContent='算数スキル '+MATH_BADGES.length+' 種類';
-  const mathGrid=$('#math-badge-grid'); mathGrid.innerHTML='';
-  MATH_BADGES.forEach((item)=>{
-    const card=document.createElement('article'); card.className='achievement-card math-skill-badge';
-    card.innerHTML='<img src="'+item.image+'" alt=""><strong>'+item.name+'</strong><span>算数の力</span>';
-    const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; mathGrid.append(card);
-  });
+  const filterCount=$('#badge-filter-count');
+  if(filterCount) filterCount.textContent=badgeFilter==='all'?'すべて表示':badgeFilter==='earned'?'獲得済みだけ':badgeFilter==='unearned'?'未獲得だけ':'もう少しで獲得';
   const owned=new Set(state.collections.filter((id)=>COLLECTIONS.some((item)=>item.id===id)));
   $('#collection-count').textContent='コレクション '+owned.size+' / '+COLLECTIONS.length+' 個';
   const grid=$('#collection-grid'); grid.innerHTML='';
   COLLECTIONS.forEach((item)=>{
     const got=owned.has(item.id),card=document.createElement('article');
-    card.className='collection-card rarity-'+item.rarity+(got?'':' locked');
+    card.className='collection-card rarity-'+item.rarity+(got?' earned':' locked');
     card.innerHTML='<img class="'+(got?'':'locked-image')+'" src="'+item.image+'" alt=""><strong>'+(got?item.name:'？')+'</strong><span>'+(got?'集めたよ':'未獲得')+'</span>';
     const img=card.querySelector('img'); img.onerror=()=>{img.hidden=true;}; grid.append(card);
   });
@@ -553,6 +653,12 @@ function renderSettings(){
   $('#setting-support').checked=state.supportMode;
   $('#setting-kuku-words').checked=state.settings.showKukuWords !== false;
 }
+
+$('[data-badge-filter]').forEach((button)=>button.addEventListener('click',()=>{
+  badgeFilter=button.dataset.badgeFilter;
+  $('[data-badge-filter]').forEach((item)=>{item.classList.toggle('selected',item===button);item.setAttribute('aria-pressed',String(item===button));});
+  renderCollection();
+}));
 
 const homeContinue=$('#home-continue');
 if(homeContinue) homeContinue.addEventListener('click',()=>show(homeContinue.dataset.target||'adventure'));
