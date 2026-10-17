@@ -156,6 +156,15 @@ export function recommendedKeys(state, limit = 5) {
     .slice(0, limit).map(([key]) => key);
 }
 
+export function questionStatus(state, key) {
+  const stat = state.multiplicationStats?.[key];
+  const recentlyUnstable = (stat?.recentResults || []).length >= 3 && recentRate(stat) < 70;
+  if (stat?.reviewActive || state.reviewQueue?.includes(key) || recentlyUnstable) return 'needs-review';
+  if (stat?.retentionConfirmedAt) return 'retained';
+  if (stat?.attempts > 0) return 'recorded';
+  return 'unseen';
+}
+
 export function isBossUnlocked(state, bossId) {
   if (bossId === 'mid1') return [2,3,4,5].every((f) => state.stageProgress[f]?.random?.cleared);
   if (bossId === 'mid2') return [6,7,8,9].every((f) => state.stageProgress[f]?.random?.cleared);
