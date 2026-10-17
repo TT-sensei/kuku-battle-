@@ -596,7 +596,8 @@ function badgeStatus(item, snap){
     };
     const p=progressMap[id];
     const extra=(id==='math-calculation'||id==='math-mental-math')?'・正答率 '+Math.round(snap.accuracy*100)+'%':'';
-    return {got,applicable,progress:p? p[0]+'/'+p[1]+' '+p[2]+extra:'このアプリでは獲得判定しない',near:applicable&&!got&&p&&p[0]>=p[1]*.6};
+    const accuracyNear=id==='math-calculation'?snap.accuracy>=.75:id==='math-mental-math'?snap.accuracy>=.7:true;
+    return {got,applicable,progress:p? p[0]+'/'+p[1]+' '+p[2]+extra:'このアプリでは獲得判定しない',near:applicable&&!got&&p&&p[0]>=p[1]*.6&&accuracyNear};
   }
   const got=Boolean(achieved[item.id]);
   const targets={
