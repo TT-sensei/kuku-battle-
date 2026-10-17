@@ -1,6 +1,6 @@
 import { EDU_EVENTS, StorageManager, ScreenManager, CountdownTimer, ScoreManager, ComboManager, AnswerChecker } from 'https://tt-sensei.github.io/edu-components/index.js';
 import { soundList } from 'https://tt-sensei.github.io/sounds-recipe-/sounds.js';
-import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, COLLECTIONS, ALL_COLLECTIONS, ACHIEVEMENT_BADGES, ENCOURAGEMENT } from './data.js';
+import { CHARACTERS, NORMAL_MONSTERS, NORMAL_MONSTER_GROUPS, BOSS_CANDIDATES, BOSSES, BACKGROUNDS, PREP_GROUP_IMAGE, COLLECTIONS, ACHIEVEMENT_BADGES, ENCOURAGEMENT } from './data.js';
 import { FACTORS, MODES, QuestionBag, TrainingScheduler, addExp, getStageRewardExp, bossQuestions, comboAnimation, defaultState, factorSummary, isBossUnlocked, isMaster, migrateState, parseKey, question, questionStatus, recommendedKeys, recordAttempt, stageQuestions, trainingSeed } from './logic.js';
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -510,7 +510,7 @@ function earnedAchievementBadges(){
   const bossCount=Object.values(state.bossProgress||{}).filter((boss)=>boss.defeated).length;
   const allFacts=Object.keys(state.multiplicationStats||{}).length;
   const earned={
-    'first-step':attempts>=1, challenger:clearedModes>=1||bossCount>=1, clear:clearedModes>=1, perfect,
+    'first-step':attempts>=1, comeback:(state.recentAttempts||[]).some((attempt,index,items)=>!attempt.correct&&items.slice(index+1).some((later)=>later.correct)), clear:clearedModes>=1, perfect,
     accuracy:attempts>=20&&correct/Math.max(1,attempts)>=.9, combo:maxCombo>=5,
     'keep-going':attempts>=30, 'hard-worker':attempts>=81, 'level-up':state.playerLevel>=2,
     'review-master':retained>=1, breakthrough:retained>=3, 'never-give-up':wrong>=1&&retained>=1,
