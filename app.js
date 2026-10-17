@@ -562,7 +562,7 @@ function badgeStatus(item, snap){
     'combo-10':maxCombo>=10,
     'comeback-5':comebacks>=5,
     'mode-variety':FACTORS.every((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.cleared)),
-    'boss-all':bossCount===3,
+    'boss-all':bossDefeats>=10,
     'long-journey':attempts>=200,
     'first-retention':retained>=1
   };
@@ -595,7 +595,8 @@ function badgeStatus(item, snap){
       'math-reverse-thinking':[Math.min(pairs,18),18,'逆向きも正解した組']
     };
     const p=progressMap[id];
-    return {got,applicable,progress:p? p[0]+'/'+p[1]+' '+p[2]:'このアプリでは獲得判定しない',near:applicable&&!got&&p&&p[0]>=p[1]*.6};
+    const extra=(id==='math-calculation'||id==='math-mental-math')?'・正答率 '+Math.round(snap.accuracy*100)+'%':'';
+    return {got,applicable,progress:p? p[0]+'/'+p[1]+' '+p[2]+extra:'このアプリでは獲得判定しない',near:applicable&&!got&&p&&p[0]>=p[1]*.6};
   }
   const got=Boolean(achieved[item.id]);
   const targets={
@@ -609,11 +610,14 @@ function badgeStatus(item, snap){
     'collection-5':[owned,5,'集めた宝物'],'collection-all':[owned,COLLECTIONS.length,'集めた宝物'],'retained-5':[retained,5,'定着した九九'],'retained-10':[retained,10,'定着した九九'],
     'accuracy-50':[Math.min(attempts,50),50,'回答数'],'accuracy-100':[Math.min(attempts,100),100,'回答数'],'combo-10':[maxCombo,10,'最大コンボ'],
     'comeback-5':[comebacks,5,'立て直し'],'mode-variety':[FACTORS.filter((factor)=>['up','down','random'].some((mode)=>state.stageProgress[factor]?.[mode]?.cleared)).length,9,'クリアした段'],
-    'boss-all':[bossCount,3,'撃破したボス'],'long-journey':[attempts,200,'回答数'],'first-retention':[retained,1,'定着した九九']
+    'boss-all':[bossDefeats,10,'ボス撃破回数'],'long-journey':[attempts,200,'回答数'],'first-retention':[retained,1,'定着した九九']
   };
   const p=targets[item.id];
   const value=p?Math.min(p[0],p[1]):0;
-  return {got,applicable:true,progress:p?value+'/'+p[1]+' '+p[2]:'条件達成',near:!got&&p&&value>=p[1]*.6};
+  const accuracyBadge=['accuracy','accuracy-50','accuracy-100'].includes(item.id);
+  const progressText=p?value+'/'+p[1]+' '+p[2]+(accuracyBadge?'・正答率 '+Math.round(accuracy*100)+'%':''):'条件達成';
+  const accuracyNear=!accuracyBadge||(item.id==='accuracy'?accuracy>=.8:item.id==='accuracy-50'?accuracy>=.8:accuracy>=.9);
+  return {got,applicable:true,progress:progressText,near:!got&&p&&value>=p[1]*.6&&accuracyNear};
 }
 
 let badgeFilter='all';
