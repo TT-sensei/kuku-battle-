@@ -127,15 +127,30 @@ function renderCharacters(partnerMode){
 
 function renderAdventure(){
   const adventure=$('#adventure');
-  adventure.style.backgroundImage=`linear-gradient(180deg,rgba(247,245,232,.42),rgba(255,253,248,.68)),url("${BACKGROUNDS.adventure}")`;
-  adventure.style.backgroundSize='cover';
-  adventure.style.backgroundPosition='center';
-  const stages=$('#stage-grid'); stages.innerHTML='';
+  adventure.style.backgroundImage='none';
+  const stages=$('#stage-grid');
+  stages.innerHTML='';
+  stages.setAttribute('aria-label','1から9の段を選ぶ冒険マップ');
+
+  let routeNote=$('#adventure-route-note');
+  if(!routeNote){
+    routeNote=document.createElement('div');
+    routeNote.id='adventure-route-note';
+    routeNote.className='adventure-route-note';
+    stages.before(routeNote);
+  }
+  routeNote.innerHTML='<div class="route-note-mark" aria-hidden="true">🧭</div><div><strong>9つの段をめぐる冒険へ！</strong><span>好きな場所から挑戦OK。のぼり・くだり・ランダムをクリアして、仲間と強くなろう。</span></div><div class="route-regions" aria-hidden="true"><span>🌿 草原</span><span>🌊 湖</span><span>⛰️ 山</span></div>';
+
   FACTORS.forEach((factor)=>{
     const summary=factorSummary(state,factor);
+    const progress=state.stageProgress[factor];
+    const cleared=['up','down','random'].filter(mode=>progress[mode].cleared).length;
+    const master=isMaster(state,factor);
+    const region=factor<=3?'🌿 はじまりの草原':factor<=6?'🌊 きらめきの湖':'⛰️ ひかりの山';
     const button=document.createElement('button');
-    button.className=`stage-card${isMaster(state,factor)?' master':''}`;
-    button.innerHTML=`<strong>${factor}</strong><small>${isMaster(state,factor)?'MASTER 👑':`${summary.mark} ${summary.label}`}</small>`;
+    button.className=`stage-card adventure-stage stage-region-${factor<=3?'forest':factor<=6?'lake':'mountain'}${master?' master':''}`;
+    button.setAttribute('aria-label',`${factor}の段。挑戦する`);
+    button.innerHTML=`<span class="stage-region">${region}</span><span class="stage-number-wrap"><strong>${factor}</strong><span class="stage-unit">の段</span><span class="stage-island-icon" aria-hidden="true">${factor<=3?'🌱':factor<=6?'💎':'⭐'}</span></span><span class="stage-status ${master?'status-master':summary.weakCount?'status-practice':'status-normal'}">${master?'👑 MASTER':summary.weakCount?'🔥 特訓しよう':summary.attempts?summary.mark+' '+summary.label:'✨ これから挑戦'}</span><span class="stage-route-progress" aria-label="クリアしたモード ${cleared} / 3">${['up','down','random'].map(mode=>`<i class="${progress[mode].cleared?'done':''}"></i>`).join('')}</span><span class="stage-action">${cleared===3?'もう一度挑戦':'冒険に出発'} <b aria-hidden="true">→</b></span>`;
     button.addEventListener('click',()=>{currentFactor=factor;$('#mode-factor').textContent=factor;show('stage-modes');});
     stages.append(button);
   });
@@ -144,8 +159,8 @@ function renderAdventure(){
     const unlocked=true;
     const hint=id==='mid1'?'2〜5の段のランダムをクリア':id==='mid2'?'6〜9の段のランダムをクリア':'中ボス2体を撃破';
     const button=document.createElement('button');
-    button.className=`boss-card${unlocked?'':' locked'}`;
-    button.innerHTML=`<img src="${config.monster.image}" alt=""><span><strong>${unlocked?config.title:'🔒 '+config.title}</strong><small>${unlocked?(state.bossProgress[id].defeated?'撃破済み・もう一度挑戦できるよ':'挑戦できるよ！'):`${hint}すると挑戦できるよ！`}</small></span>`;
+    button.className=`boss-card adventure-boss${state.bossProgress[id].defeated?' defeated':''}${unlocked?'':' locked'}`;
+    button.innerHTML=`<img src="${config.monster.image}" alt=""><span class="boss-copy"><span class="boss-eyebrow">${id==='final'?'最終エリア':'ボスチャレンジ'}</span><strong>${config.title}</strong><small>${state.bossProgress[id].defeated?'🏆 撃破済み・何度でも挑戦OK':'⚔️ 挑戦できるよ！'}</small></span><span class="boss-arrow" aria-hidden="true">→</span>`;
     button.addEventListener('click',()=>unlocked && prepareBattle({kind:'boss',bossId:id}));
     bosses.append(button);
   });
