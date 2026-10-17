@@ -163,7 +163,16 @@
 
     <section id="collection" class="screen panel-screen" hidden>
       <header class="screen-head"><button class="back" data-go="home">← ホーム</button><div><p class="eyebrow">学習した結果の宝物</p><h2>コレクション</h2></div></header>
-      <p id="collection-count" class="collection-count"></p><div id="collection-grid" class="collection-grid"></div>
+      <section class="collection-section" aria-labelledby="badge-section-title">
+        <div class="collection-section-head"><div><p class="eyebrow">LEARNING ACHIEVEMENTS</p><h3 id="badge-section-title">学びのバッジ</h3></div><p id="badge-count" class="collection-count">バッジ 0 / 17 個</p></div>
+        <p class="collection-section-note">練習やクリアの記録に合わせて獲得するよ。ランダムではなく、達成した条件がバッジになるよ。</p>
+        <div id="badge-grid" class="achievement-grid"></div>
+      </section>
+      <section class="collection-section" aria-labelledby="collection-section-title">
+        <div class="collection-section-head"><div><p class="eyebrow">FANTASY COLLECTION</p><h3 id="collection-section-title">ファンタジーコレクション</h3></div><p id="collection-count" class="collection-count"></p></div>
+        <p class="collection-section-note">ステージやボスを初めてクリアすると、順番に集められるよ。</p>
+        <div id="collection-grid" class="collection-grid"></div>
+      </section>
     </section>
 
     <section id="settings" class="screen panel-screen compact" hidden>
