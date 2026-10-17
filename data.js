@@ -122,7 +122,30 @@ export const MATH_BADGES=[
   ['visualize','見える化マスター']
 ].map(([id,name])=>({id:`math-${id}`,name,rarity:'common',category:'math',image:`${MATH_ASSETS}/${id}/badge.webp`}));
 
-export const ALL_COLLECTIONS=[...COLLECTIONS,...MATH_BADGES];
+// 学習の達成バッジは、実際の学習記録から条件達成を判定する。ランダム報酬にはしない。
+const BADGE_ASSETS='https://tt-sensei.github.io/edu-assets/assets/web/badges/common';
+export const ACHIEVEMENT_BADGES=[
+  ['first-step','はじめの一歩','九九に初めて取り組んだ','1問以上の回答記録'],
+  ['challenger','チャレンジャー','段やボスに挑戦した','段を1モード以上クリア、またはボスを撃破'],
+  ['clear','クリア','最初のステージクリア','段を1モード以上クリア'],
+  ['perfect','パーフェクト','ミスなしでクリア','段をミスなしでクリア'],
+  ['accuracy','正確無比','正確さが身についてきた','20回以上回答し、正答率90%以上'],
+  ['combo','コンボ','連続正解でコンボ！','最大5コンボ以上'],
+  ['keep-going','継続パワー','何度も練習した','回答記録30回以上'],
+  ['hard-worker','努力家','コツコツ積み重ねた','回答記録81回以上'],
+  ['level-up','レベルアップ','冒険レベルが上がった','レベル2以上'],
+  ['review-master','ふくしゅう名人','苦手な九九が定着した','間を空けた再確認で1問以上定着'],
+  ['breakthrough','にがて突破','苦手を乗り越えた','間を空けた再確認で3問以上定着'],
+  ['never-give-up','あきらめない心','まちがい直しを続けた','まちがい記録と定着した九九がある'],
+  ['mastery','マスター','1つの段をマスター','1つ以上の段がMASTER'],
+  ['adventurer','ボスハンター','ボスに挑戦し撃破','ボスを1体以上撃破'],
+  ['steady-progress','着実な歩み','いろいろな練習に挑戦','段のモードを9つ以上クリア'],
+  ['champion','ボスチャンピオン','3体のボスをすべて撃破','中ボス2体と大ボスを撃破'],
+  ['explorer','九九エクスプローラー','九九の世界を広く探検','異なる九九を27問以上記録']
+].map(([id,name,description,criteria])=>({id,name,description,criteria,rarity:'common',image:BADGE_ASSETS+'/'+id+'/badge.webp'}));
+
+// コレクションはステージやボスの初クリア報酬。学びのバッジとは分けて表示する。
+export const ALL_COLLECTIONS=COLLECTIONS;
 
 export const ENCOURAGEMENT={
   correct:['いいね！','そのちょうし！','ばっちり！','できてるよ！'],
